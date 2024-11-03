@@ -196,7 +196,7 @@ public class AdminService extends ClientService {
         customersRepository.deleteById(customerId);
     }
 
-    public List<Customer> getAllCustomers(){
+    public List<Customer> getAllCustomers() {
         return customersRepository.findAll();
     }
 
@@ -208,5 +208,55 @@ public class AdminService extends ClientService {
     public List<Category> getCategories() {
         return categoriesRepository.findAll();
     }
+
+    public Category getOneCategory(int categoryId) {
+        return categoriesRepository.findById(categoryId).orElseThrow();
+    }
+
+    public String addCategory(Category category) throws UnallowedUpdateException, EmptyValueException {
+        //we cannot add a null value
+        if (category == null)
+            throw new EmptyValueException();
+
+        //we cannot add a category that is not only alphabetical
+        if (!Validations.onlyAlphabets(category.getName()))
+            throw new NameException();
+
+        //we cannot add category with an already existing name
+        if(categoriesRepository.existsByName(category.getName()))
+            throw new AlreadyExistingValueException();
+
+        //we cannot add a category with a self-chosen id
+        if (category.getId() != 0)
+            throw new UnallowedUpdateException();
+
+        categoriesRepository.save(category);
+        return "A Category Named '" + category.getName() + "' Was added Successfully";
+    }
+
+    public String updateCategory(Category category) throws EmptyValueException, NonexistantObjectException, NameException, AlreadyExistingValueException {
+        //we cannot update a null value
+        if (category == null)
+            throw new EmptyValueException();
+
+        //we cannot update a nonexistant category
+        if (!categoriesRepository.existsById(category.getId()))
+            throw new NonexistantObjectException();
+
+        //we cannot update a category whose name is not only alphabetical
+        if (!Validations.onlyAlphabets(category.getName()))
+            throw new NameException();
+
+        //we cannot update category with an already existing name
+        if(categoriesRepository.existsByName(category.getName()))
+            throw new AlreadyExistingValueException();
+
+
+        categoriesRepository.save(category);
+        return "A Category With An Id Of '" + category.getId() + "' Was Updated Successfully";
+    }
+
+    //right now I do not want to implement a deleteCategory method because it is too risky. Categories can be deleted
+    // directly through the DB
 }
 

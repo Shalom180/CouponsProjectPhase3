@@ -1,5 +1,6 @@
 package couponsProjectPhase3.controllers;
 
+import couponsProjectPhase3.beans.Category;
 import couponsProjectPhase3.beans.Company;
 import couponsProjectPhase3.beans.Customer;
 import couponsProjectPhase3.exceptions.NonexistantObjectException;
@@ -80,6 +81,25 @@ public class AdminController {
     @GetMapping("/customer/{id}")
     public Customer getOneCustomer(@PathVariable int id) {
         return service.getOneCustomer(id);
+    }
+
+    @GetMapping("/categories")
+    public List<Category> getAllCategories() {
+        return service.getCategories();
+    }
+
+    @GetMapping("/category/{id}")
+    public Category getOneCategory(@PathVariable int id) {
+        return service.getOneCategory(id);
+    }
+
+    @PostMapping("/category")
+    public String addCategory(@RequestBody Category category) throws EmptyValueException, UnallowedUpdateException {
+        return service.addCategory(category);
+    }
+
+    public String updateCategory(Category category) throws NameException, NonexistantObjectException, EmptyValueException, AlreadyExistingValueException {
+        return service.updateCategory(category);
     }
 
 

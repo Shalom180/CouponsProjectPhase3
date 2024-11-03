@@ -25,12 +25,11 @@ public class Customer {
     }
 
     //for insert
-    public Customer(String firstName, String lastName, String email, String password, Set<Coupon> coupons)
-            throws NameException, EmailFormatException, PasswordFormatException {
-        setFirstName(firstName);
-        setLastName(lastName);
-        setEmail(email);
-        setPassword(password);
+    public Customer(String firstName, String lastName, String password, String email, Set<Coupon> coupons) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
         this.coupons = coupons;
     }
 

@@ -61,6 +61,8 @@ public class Test /*implements CommandLineRunner*/ {
                  NonexistantObjectException |
                  WrongEmailOrPasswordException  e) {
             System.out.println(e.getMessage());
+        } catch (EmptyValueException e) {
+            throw new RuntimeException(e);
         }
     }
 
