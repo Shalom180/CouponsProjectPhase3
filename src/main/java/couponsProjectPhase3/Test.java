@@ -140,7 +140,7 @@ public class Test /*implements CommandLineRunner*/ {
         List<Coupon> foodCoupons = companyService.getCompanyCoupons(companyService.getCategories().get(0));
         System.out.println(foodCoupons);
 
-        List<Coupon> cheaperThan50 = companyService.getCompanyCoupons(50);
+        List<Coupon> cheaperThan50 = companyService.getCompanyCoupons(1,50);
         System.out.println(cheaperThan50);
 
         System.out.println(companyService.getCompanyDetails());

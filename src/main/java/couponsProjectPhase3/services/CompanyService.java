@@ -133,8 +133,8 @@ public class CompanyService extends ClientService {
     }
 
     //returns all the company's coupons below a certain price
-    public List<Coupon> getCompanyCoupons(double maxPrice) {
-        return couponsRepository.findAllByCompanyAndPriceBelow(companyID, maxPrice);
+    public List<Coupon> getCompanyCoupons(double minPrice, double maxPrice) {
+        return couponsRepository.findAllByCompanyAndPriceBetween(companyID, minPrice, maxPrice);
     }
 
     public Company getCompanyDetails() {

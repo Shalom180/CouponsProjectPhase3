@@ -57,8 +57,8 @@ public class CompanyController {
     }
 
     @GetMapping("/bymaxprice")
-    public List<Coupon> getCompanyCoupons(double maxPrice) {
-        return service.getCompanyCoupons(maxPrice);
+    public List<Coupon> getCompanyCoupons(double minPrice, double maxPrice) {
+        return service.getCompanyCoupons(minPrice, maxPrice);
     }
 
     @GetMapping()

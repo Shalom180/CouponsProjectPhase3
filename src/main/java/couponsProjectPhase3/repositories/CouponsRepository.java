@@ -12,6 +12,7 @@ import java.sql.Date;
 import java.util.List;
 
 public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
+
     boolean existsByTitle(String title);
 
     @Query(value = "select * from coupons where end_date<?1", nativeQuery = true)
@@ -32,13 +33,17 @@ public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
     @Query(value = "DELETE FROM coupons WHERE company_id=?1", nativeQuery = true)
     void deleteAllCouponsByCompanyId(int companyId);
 
+    List<Coupon> findAllByPriceBetween(double minPrice, double maxPrice);
+
     List<Coupon> findAllByCompanyId(int companyId);
 
     List<Coupon> findAllByCompanyAndCategory(Company company, Category category);
 
+    List<Coupon> findAllByCompanyAndCategoryAndPriceBetween(Company company, Category category, double minPrice, double maxPrice);
+
 
     @Query(value = "SELECT * FROM coupons WHERE company_id=?1 AND price<?2", nativeQuery = true)
-    List<Coupon> findAllByCompanyAndPriceBelow(int company_id, double maxPrice);
+    List<Coupon> findAllByCompanyAndPriceBetween(int company_id, double minPrice, double maxPrice);
 
     @Query(value = "SELECT * FROM coupons c RIGHT JOIN customers_coupons cc ON c.id=cc.coupons_id WHERE cc.customers_id=?1",
             nativeQuery = true)
@@ -50,7 +55,7 @@ public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
 
     @Query(value = "SELECT * FROM coupons c RIGHT JOIN customers_coupons cc ON c.id=cc.coupons_id WHERE cc.customers_id=?1 " +
             "AND c.price<?2", nativeQuery = true)
-    List<Coupon> findAllByCustomerIdAndPriceBelow(int customerID, double maxPrice);
+    List<Coupon> findAllByCustomerIdAndPriceBetween(int customerID, double minPrice, double maxPrice);
 
 
 }

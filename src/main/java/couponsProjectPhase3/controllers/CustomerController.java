@@ -44,9 +44,9 @@ public class CustomerController {
         return service.getCustomerCoupons(category);
     }
 
-    @GetMapping("/couponsbelow/{maxPrice}")
-    public List<Coupon> getCustomerCoupons(@PathVariable double maxPrice) throws NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
-        return service.getCustomerCoupons(maxPrice);
+    @GetMapping("/couponsbetween/{minPrice}/{maxPrice}")
+    public List<Coupon> getCustomerCoupons(@PathVariable double minPrice, @PathVariable double maxPrice) throws NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
+        return service.getCustomerCoupons(minPrice, maxPrice);
     }
 
     @GetMapping()

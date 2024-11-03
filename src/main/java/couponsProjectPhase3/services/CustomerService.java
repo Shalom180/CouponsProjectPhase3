@@ -72,9 +72,9 @@ public class CustomerService extends ClientService {
         return couponsRepository.findAllByCustomerIdAndCategoryId(customerID, category.getId());
     }
 
-    public List<Coupon> getCustomerCoupons(double maxPrice) throws NonPositiveValueException, EmailFormatException,
+    public List<Coupon> getCustomerCoupons(double minPrice, double maxPrice) throws NonPositiveValueException, EmailFormatException,
             NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
-        return couponsRepository.findAllByCustomerIdAndPriceBelow(customerID, maxPrice);
+        return couponsRepository.findAllByCustomerIdAndPriceBetween(customerID, minPrice, maxPrice);
 
     }
 
