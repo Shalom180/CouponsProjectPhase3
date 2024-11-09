@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CompanyService extends ClientService {
@@ -26,15 +27,8 @@ public class CompanyService extends ClientService {
     }
 
     //methods
-    @Override
-    public boolean login(String email, String password) {
-        Company company = companiesRepository.findByEmailAndPassword(email, password).orElse(null);
-        if (company == null)
-            return false;
-        else {
-            companyID = company.getId();
-            return true;
-        }
+    public Company login(String email, String password) {
+        return companiesRepository.findByEmailAndPassword(email, password).orElseThrow(()->new NoSuchElementException("User not found"));
     }
 
     public void addCoupon(Coupon coupon) throws NegativeValueException, DateException, EmptyValueException,
@@ -128,13 +122,13 @@ public class CompanyService extends ClientService {
     }
 
     //returns all the company's coupons in a certain category
-    public List<Coupon> getCompanyCoupons(Category category) {
-        return couponsRepository.findAllByCompanyAndCategory(companiesRepository.findById(companyID).get(), category);
+    public List<Coupon> getCompanyCoupons(int categoryId) {
+        return couponsRepository.findAllByCompanyIdAndCategoryId(companyID, categoryId);
     }
 
     //returns all the company's coupons below a certain price
     public List<Coupon> getCompanyCoupons(double minPrice, double maxPrice) {
-        return couponsRepository.findAllByCompanyAndPriceBetween(companyID, minPrice, maxPrice);
+        return couponsRepository.findAllByCompanyIdAndPriceBetween(companyID, minPrice, maxPrice);
     }
 
     public Company getCompanyDetails() {

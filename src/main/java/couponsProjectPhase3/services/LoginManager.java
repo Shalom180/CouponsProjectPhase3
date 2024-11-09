@@ -5,6 +5,10 @@ import couponsProjectPhase3.exceptions.*;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.EmptyValueException;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 @Component
 public class LoginManager {
     private final AdminService adminService;
@@ -20,16 +24,24 @@ public class LoginManager {
 
 
 
-    public ClientService login(String email, String password, ClientType clientType) throws WrongEmailOrPasswordException, EmptyValueException {
-        if (clientType.equals(ClientType.Administrator) && adminService.login(email, password))
-            return adminService;
-
-        else if (clientType.equals(ClientType.Company) && companyService.login(email, password))
-            return companyService;
-
-        else if (clientType.equals(ClientType.Customer) && customerService.login(email, password))
-            return customerService;
-
-        throw new WrongEmailOrPasswordException();
+    public Map<ClientService, ClientType> login(String email, String password) throws WrongEmailOrPasswordException, EmptyValueException {
+        Map<ClientService, ClientType> map = new HashMap<>();
+        try {
+            adminService.login(email, password);
+            map.put(adminService, ClientType.Administrator);
+        } catch (NoSuchElementException e1) {
+            try {
+                companyService.login(email, password);
+                map.put(companyService, ClientType.Company);
+            } catch (NoSuchElementException e2) {
+                try {
+                    customerService.login(email, password);
+                    map.put(customerService, ClientType.Customer);
+                } catch (NoSuchElementException e3) {
+                    throw new WrongEmailOrPasswordException();
+                }
+            }
+        }
+        return map;
     }
 }

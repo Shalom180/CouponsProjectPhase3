@@ -23,7 +23,6 @@ public class AdminService extends ClientService {
     }
 
     //methods
-    @Override
     public boolean login(String email, String password) throws EmptyValueException {
         if (email == null || email.isEmpty() || password == null || password.isEmpty())
             throw new EmptyValueException();

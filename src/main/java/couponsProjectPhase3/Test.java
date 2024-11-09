@@ -78,7 +78,7 @@ public class Test /*implements CommandLineRunner*/ {
             NonexistantObjectException, NameException {
 
         AdminService adminService = (AdminService) loginManager.login(
-                "admin@admin.com", "admin", ClientType.Administrator);
+                "admin@admin.com", "admin");
 
         Company johnnysCompany = new Company("JohnnyAndCo.", "johnny@johnnyandco.com", "Adhdjh1(45",
                 null);
@@ -114,7 +114,7 @@ public class Test /*implements CommandLineRunner*/ {
             EmptyValueException, CompanyIdException, AlreadyExistingValueException, UnallowedUpdateException,
             NonexistantObjectException, WrongEmailOrPasswordException {
         CompanyService companyService = (CompanyService) loginManager.login(
-                "johnny@johnnyandco.com", "Adhdjh1(45", ClientType.Company);
+                "johnny@johnnyandco.com", "Adhdjh1(45");
 
         Coupon johnnysCoupon1 = new Coupon(
                 companyService.getCompanyDetails(), companyService.getCategories().get(0), "Johnny's Food Coupon",
@@ -137,7 +137,7 @@ public class Test /*implements CommandLineRunner*/ {
 
         companyService.deleteCoupon(allCoupons.get(0).getId());
 
-        List<Coupon> foodCoupons = companyService.getCompanyCoupons(companyService.getCategories().get(0));
+        List<Coupon> foodCoupons = companyService.getCompanyCoupons(0);
         System.out.println(foodCoupons);
 
         List<Coupon> cheaperThan50 = companyService.getCompanyCoupons(1,50);
@@ -152,7 +152,7 @@ public class Test /*implements CommandLineRunner*/ {
             EmptyValueException, NonexistantObjectException, UnavailableCouponException, AlreadyPurchasedException,
             WrongEmailOrPasswordException {
         CustomerService customerService = (CustomerService) loginManager.login(
-                "yali.taw@gmail.com", "@YalisPassword1", ClientType.Customer);
+                "yali.taw@gmail.com", "@YalisPassword1");
 
 
         customerService.purchaseCoupon(coupon);
@@ -161,7 +161,7 @@ public class Test /*implements CommandLineRunner*/ {
 
         List<Coupon> yalisFashionCoupons = customerService.getCustomerCoupons(customerService.getCategories().get(1));
 
-        List<Coupon> yalisCouponsBellow50 = customerService.getCustomerCoupons(50);
+        List<Coupon> yalisCouponsBellow50 = customerService.getCustomerCoupons(1, 50);
 
         Customer customerYali2 = customerService.getCustomerDetails();
     }

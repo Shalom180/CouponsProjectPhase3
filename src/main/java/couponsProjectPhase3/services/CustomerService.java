@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class CustomerService extends ClientService {
@@ -26,15 +27,8 @@ public class CustomerService extends ClientService {
     }
 
     //methods
-    @Override
-    public boolean login(String email, String password) {
-        Customer customer = customersRepository.findByEmailAndPassword(email, password).orElse(null);
-        if (customer == null)
-            return false;
-        else {
-            customerID = customer.getId();
-            return true;
-        }
+    public Customer login(String email, String password) {
+        return customersRepository.findByEmailAndPassword(email, password).orElseThrow(()->new NoSuchElementException("Customer not found"));
     }
 
     public void purchaseCoupon(Coupon coupon) throws EmptyValueException, AlreadyPurchasedException, UnavailableCouponException, NonexistantObjectException {
@@ -75,7 +69,38 @@ public class CustomerService extends ClientService {
     public List<Coupon> getCustomerCoupons(double minPrice, double maxPrice) throws NonPositiveValueException, EmailFormatException,
             NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
         return couponsRepository.findAllByCustomerIdAndPriceBetween(customerID, minPrice, maxPrice);
+    }
 
+    public List<Coupon> getCoupons() {
+        return couponsRepository.findAll();
+    }
+
+    public List<Coupon> getCouponsByPriceBetween(double minPrice, double maxPrice) {
+        return couponsRepository.findAllByPriceBetween(minPrice, maxPrice);
+    }
+
+    public List<Coupon> getCouponsByCategoryId(int categoryId) {
+        return couponsRepository.findAllByCategoryId(categoryId);
+    }
+
+    public List<Coupon> getCouponsByCompanyId(int companyId) {
+        return couponsRepository.findAllByCompanyId(companyId);
+    }
+
+    public List<Coupon> getCouponsByCompanyIdAndCategoryId(int companyId, int categoryId) {
+        return couponsRepository.findAllByCompanyIdAndCategoryId(companyId, categoryId);
+    }
+
+    public List<Coupon> getCouponsByCompanyIdAndPriceBetween(int companyId, double minPrice, double maxPrice) {
+        return couponsRepository.findAllByCompanyIdAndPriceBetween(companyId, minPrice, maxPrice);
+    }
+
+    public List<Coupon> getCouponsByCategoryIdAndPriceBetween(int categoryId, double minPrice, double maxPrice) {
+        return couponsRepository.findAllByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice);
+    }
+
+    public List<Coupon> getCouponsByCompanyIdAndCategoryAndPriceBetween(int companyId, int categoryId, double minPrice, double maxPrice) {
+        return couponsRepository.findAllByCompanyIdAndCategoryIdAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
     }
 
     public Customer getCustomerDetails() throws NonPositiveValueException, EmailFormatException, NegativeValueException,

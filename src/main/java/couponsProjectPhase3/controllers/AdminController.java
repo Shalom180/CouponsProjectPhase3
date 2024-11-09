@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/admin")
 public class AdminController {
     private AdminService service;
@@ -22,10 +21,10 @@ public class AdminController {
     }
 
     //methods
-    @GetMapping("/login/{email}/{password}")
-    public boolean login(@PathVariable String email, @PathVariable String password) throws EmptyValueException {
-        return service.login(email, password);
-    }
+//    @GetMapping("/login/{email}/{password}")
+//    public boolean login(@PathVariable String email, @PathVariable String password) throws EmptyValueException {
+//        return service.login(email, password);
+//    }
 
     @PostMapping("/company")
     public String addCompany(@RequestBody Company company) throws EmptyValueException, UnallowedUpdateException {

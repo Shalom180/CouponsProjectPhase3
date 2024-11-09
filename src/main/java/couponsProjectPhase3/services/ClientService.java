@@ -1,5 +1,6 @@
 package couponsProjectPhase3.services;
 
+import couponsProjectPhase3.beans.Category;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.*;
 import couponsProjectPhase3.repositories.CategoriesRepository;
 import couponsProjectPhase3.repositories.CompaniesRepository;
@@ -7,6 +8,7 @@ import couponsProjectPhase3.repositories.CouponsRepository;
 import couponsProjectPhase3.repositories.CustomersRepository;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public abstract class ClientService {
     protected CompaniesRepository companiesRepository;
@@ -23,6 +25,6 @@ public abstract class ClientService {
     }
 
     //methods
-    public abstract boolean login(String email, String password) throws NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, SQLException, DateException, EmptyValueException, NameException, EmptyValueException;
+    public abstract List<Category> getCategories();
 
 }

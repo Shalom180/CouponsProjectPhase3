@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/customer")
 public class CustomerController {
     private CustomerService service;
@@ -23,10 +22,10 @@ public class CustomerController {
     }
 
     //methods
-    @GetMapping("/login/{email}/{password}")
-    public boolean login(@PathVariable String email, @PathVariable String password) {
-        return service.login(email, password);
-    }
+//    @GetMapping("/login/{email}/{password}")
+//    public boolean login(@PathVariable String email, @PathVariable String password) {
+//        return service.login(email, password);
+//    }
 
     @PostMapping("/purchase")
     public String purchaseCoupon(@RequestBody Coupon coupon) throws NonexistantObjectException, EmptyValueException, UnavailableCouponException, AlreadyPurchasedException {
@@ -34,17 +33,17 @@ public class CustomerController {
         return coupon.getTitle() + "Was Purchased Successfully.";
     }
 
-    @GetMapping("/coupons")
+    @GetMapping("/mycoupons")
     public List<Coupon> getCustomerCoupons() {
         return service.getCustomerCoupons();
     }
 
-    @GetMapping("/couponsbycategory/category")
+    @GetMapping("/mycouponsbycategory/category")
     public List<Coupon> getCustomerCoupons(@RequestBody Category category) {
         return service.getCustomerCoupons(category);
     }
 
-    @GetMapping("/couponsbetween/{minPrice}/{maxPrice}")
+    @GetMapping("/mycouponsbetween/{minPrice}/{maxPrice}")
     public List<Coupon> getCustomerCoupons(@PathVariable double minPrice, @PathVariable double maxPrice) throws NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
         return service.getCustomerCoupons(minPrice, maxPrice);
     }
@@ -54,8 +53,44 @@ public class CustomerController {
         return service.getCustomerDetails();
     }
 
+    @GetMapping("/categories")
     public List<Category> getCategories() {
         return service.getCategories();
+    }
+
+    //method that are shared with the guest controller
+    @GetMapping("/coupons")
+    public List<Coupon> getCouponsByPriceBetween(double minPrice, double maxPrice) {
+        return service.getCouponsByPriceBetween(minPrice, maxPrice);
+    }
+    @GetMapping("/couponsbycategory/{categoryId)")
+    public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
+        return service.getCouponsByCategoryId(categoryId);
+    }
+
+    @GetMapping("/couponsbycompany/{companyId)")
+    public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
+        return service.getCouponsByCompanyId(companyId);
+    }
+
+    @GetMapping("/couponsbycompanyandcategory/{companyId)/{categoryId}")
+    public List<Coupon> getCouponsByCompanyIdAndCategoryId(@PathVariable int companyId, @PathVariable int categoryId) {
+        return service.getCouponsByCompanyIdAndCategoryId(companyId, categoryId);
+    }
+
+    @GetMapping("/couponsbycompanyandprice/{companyId)/{minPrice}/{maxPrice}")
+    public List<Coupon> getCouponsByCompanyIdAndPriceBetween(@PathVariable int companyId, @PathVariable double minPrice, @PathVariable double maxPrice) {
+        return service.getCouponsByCompanyIdAndPriceBetween(companyId, minPrice, maxPrice);
+    }
+
+    @GetMapping("/couponsbycategoryandprice/{categoryId)/{minPrice}/{maxPrice}")
+    public List<Coupon> getCouponsByCategoryIdAndPriceBetween(@PathVariable int categoryId, @PathVariable double minPrice, @PathVariable double maxPrice) {
+        return service.getCouponsByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice);
+    }
+
+    @GetMapping("/couponsbycomapnyandcategoryandprice/{companyId}/{categoryId)/{minPrice}/{maxPrice}")
+    public List<Coupon> getCouponsByCompanyIdAndCategoryAndPriceBetween(@PathVariable int companyId, @PathVariable int categoryId, @PathVariable  double minPrice, @PathVariable double maxPrice) {
+        return service.getCouponsByCompanyIdAndCategoryAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
     }
 
 }

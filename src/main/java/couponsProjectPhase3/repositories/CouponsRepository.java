@@ -37,13 +37,18 @@ public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
 
     List<Coupon> findAllByCompanyId(int companyId);
 
-    List<Coupon> findAllByCompanyAndCategory(Company company, Category category);
+    List<Coupon> findAllByCategoryId(int CategoryId);
 
-    List<Coupon> findAllByCompanyAndCategoryAndPriceBetween(Company company, Category category, double minPrice, double maxPrice);
+    List<Coupon> findAllByCompanyIdAndCategoryId(int companyId, int categoryId);
+
+    @Query(value = "SELECT * FROM coupons WHERE company_id=?1 AND price BETWEEN ?2 AND ?3", nativeQuery = true)
+    List<Coupon> findAllByCompanyIdAndPriceBetween(int company_id, double minPrice, double maxPrice);
+
+    List<Coupon> findAllByCategoryIdAndPriceBetween(int categoryId, double minPrice, double maxPrice);
+
+    List<Coupon> findAllByCompanyIdAndCategoryIdAndPriceBetween(int companyId, int categoryId, double minPrice, double maxPrice);
 
 
-    @Query(value = "SELECT * FROM coupons WHERE company_id=?1 AND price<?2", nativeQuery = true)
-    List<Coupon> findAllByCompanyAndPriceBetween(int company_id, double minPrice, double maxPrice);
 
     @Query(value = "SELECT * FROM coupons c RIGHT JOIN customers_coupons cc ON c.id=cc.coupons_id WHERE cc.customers_id=?1",
             nativeQuery = true)
@@ -54,7 +59,7 @@ public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
     List<Coupon> findAllByCustomerIdAndCategoryId(int customerID, int categoryId);
 
     @Query(value = "SELECT * FROM coupons c RIGHT JOIN customers_coupons cc ON c.id=cc.coupons_id WHERE cc.customers_id=?1 " +
-            "AND c.price<?2", nativeQuery = true)
+            "AND c.price BETWEEN ?2 AND ?3", nativeQuery = true)
     List<Coupon> findAllByCustomerIdAndPriceBetween(int customerID, double minPrice, double maxPrice);
 
 

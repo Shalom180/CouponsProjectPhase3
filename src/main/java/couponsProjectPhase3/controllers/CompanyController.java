@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/company")
 public class CompanyController {
     private final CompanyService service;
@@ -23,10 +22,10 @@ public class CompanyController {
     }
 
     //methods
-    @GetMapping("/login/{email}/{password}")
-    public boolean login(@PathVariable String email, @PathVariable String password) {
-        return service.login(email, password);
-    }
+//    @GetMapping("/login/{email}/{password}")
+//    public boolean login(@PathVariable String email, @PathVariable String password) {
+//        return service.login(email, password);
+//    }
 
     @PostMapping("/coupon")
     public String addCoupon(@RequestBody Coupon coupon) throws NonexistantObjectException, EmptyValueException, UnallowedUpdateException {
@@ -51,13 +50,13 @@ public class CompanyController {
         return service.getCompanyCoupons();
     }
 
-    @GetMapping("/bycategory")
-    public List<Coupon> getCompanyCoupons(Category category) {
-        return service.getCompanyCoupons(category);
+    @GetMapping("/bycategoryid")
+    public List<Coupon> getCompanyCoupons(int categoryId) {
+        return service.getCompanyCoupons(categoryId);
     }
 
-    @GetMapping("/bymaxprice")
-    public List<Coupon> getCompanyCoupons(double minPrice, double maxPrice) {
+    @GetMapping("/between/{minPrice}/{maxPrice}")
+    public List<Coupon> getCompanyCoupons(@PathVariable double minPrice, @PathVariable double maxPrice) {
         return service.getCompanyCoupons(minPrice, maxPrice);
     }
 
