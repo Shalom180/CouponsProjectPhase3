@@ -2,10 +2,7 @@ package couponsProjectPhase3.controllers;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import couponsProjectPhase3.beans.ClientType;
-import couponsProjectPhase3.beans.Company;
-import couponsProjectPhase3.beans.Coupon;
-import couponsProjectPhase3.beans.Customer;
+import couponsProjectPhase3.beans.*;
 import couponsProjectPhase3.exceptions.WrongEmailOrPasswordException;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.EmptyValueException;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.UnallowedUpdateException;
@@ -42,11 +39,13 @@ public class GuestController {
     }
 
     //methods
-    @PostMapping
+    @PostMapping("/signup")
     public String customerSignUp(@RequestBody Customer customer) throws EmptyValueException, UnallowedUpdateException {
         adminService.addCustomer(customer);
         return "User " + customer.getFirstName() + " " + customer.getLastName() + " added";
     }
+
+    //todo
 //
 //    @PostMapping("login")
 //    public String login(String email, String password) throws WrongEmailOrPasswordException, EmptyValueException {
@@ -54,6 +53,8 @@ public class GuestController {
 //        Map<ClientService, ClientType> map = loginManager.login(email, password);
 //        ClientType clientType = map.values().toArray()[0];
 //    }
+
+    //ad signout method
 
     private String createAdminToken() {
         Date expires = new Date();
@@ -94,36 +95,46 @@ public class GuestController {
     }
 
     //method that are shared with the customer controller
+    @GetMapping("/categories")
+    public List<Category> getCategories() {
+        return customerService.getCategories();
+    }
+
     @GetMapping("/coupons")
-    public List<Coupon> getCouponsByPriceBetween(double minPrice, double maxPrice) {
+    public List<Coupon> getCoupons() {
+        return customerService.getCoupons();
+    }
+
+    @GetMapping("/coupons/{minPrice}/{maxPrice}")
+    public List<Coupon> getCouponsByPriceBetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
         return customerService.getCouponsByPriceBetween(minPrice, maxPrice);
     }
-    @GetMapping("/couponsbycategory/{categoryId)")
+    @GetMapping("/couponsbycategory/{categoryId}")
     public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
         return customerService.getCouponsByCategoryId(categoryId);
     }
 
-    @GetMapping("/couponsbycompany/{companyId)")
+    @GetMapping("/couponsbycompany/{companyId}")
     public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
         return customerService.getCouponsByCompanyId(companyId);
     }
 
-    @GetMapping("/couponsbycompanyandcategory/{companyId)/{categoryId}")
+    @GetMapping("/couponsbycompanyandcategory/{companyId}/{categoryId}")
     public List<Coupon> getCouponsByCompanyIdAndCategoryId(@PathVariable int companyId, @PathVariable int categoryId) {
         return customerService.getCouponsByCompanyIdAndCategoryId(companyId, categoryId);
     }
 
-    @GetMapping("/couponsbycompanyandprice/{companyId)/{minPrice}/{maxPrice}")
+    @GetMapping("/couponsbycompanyandprice/{companyId}/{minPrice}/{maxPrice}")
     public List<Coupon> getCouponsByCompanyIdAndPriceBetween(@PathVariable int companyId, @PathVariable double minPrice, @PathVariable double maxPrice) {
         return customerService.getCouponsByCompanyIdAndPriceBetween(companyId, minPrice, maxPrice);
     }
 
-    @GetMapping("/couponsbycategoryandprice/{categoryId)/{minPrice}/{maxPrice}")
+    @GetMapping("/couponsbycategoryandprice/{categoryId}/{minPrice}/{maxPrice}")
     public List<Coupon> getCouponsByCategoryIdAndPriceBetween(@PathVariable int categoryId, @PathVariable double minPrice, @PathVariable double maxPrice) {
         return customerService.getCouponsByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice);
     }
 
-    @GetMapping("/couponsbycomapnyandcategoryandprice/{companyId}/{categoryId)/{minPrice}/{maxPrice}")
+    @GetMapping("/couponsbycomapnyandcategoryandprice/{companyId}/{categoryId}/{minPrice}/{maxPrice}")
     public List<Coupon> getCouponsByCompanyIdAndCategoryAndPriceBetween(@PathVariable int companyId, @PathVariable int categoryId, @PathVariable  double minPrice, @PathVariable double maxPrice) {
         return customerService.getCouponsByCompanyIdAndCategoryAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
     }

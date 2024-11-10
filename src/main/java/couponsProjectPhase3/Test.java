@@ -159,7 +159,7 @@ public class Test /*implements CommandLineRunner*/ {
 
         List<Coupon> yalisCoupons = customerService.getCustomerCoupons();
 
-        List<Coupon> yalisFashionCoupons = customerService.getCustomerCoupons(customerService.getCategories().get(1));
+        List<Coupon> yalisFashionCoupons = customerService.getCustomerCoupons(1);
 
         List<Coupon> yalisCouponsBellow50 = customerService.getCustomerCoupons(1, 50);
 

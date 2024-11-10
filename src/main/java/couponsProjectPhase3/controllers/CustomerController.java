@@ -38,9 +38,9 @@ public class CustomerController {
         return service.getCustomerCoupons();
     }
 
-    @GetMapping("/mycouponsbycategory/category")
-    public List<Coupon> getCustomerCoupons(@RequestBody Category category) {
-        return service.getCustomerCoupons(category);
+    @GetMapping("/mycouponsbycategory/{categoryId}")
+    public List<Coupon> getCustomerCoupons(@PathVariable int categoryId) {
+        return service.getCustomerCoupons(categoryId);
     }
 
     @GetMapping("/mycouponsbetween/{minPrice}/{maxPrice}")
@@ -53,42 +53,49 @@ public class CustomerController {
         return service.getCustomerDetails();
     }
 
+
+    //methods that are shared with the guest controller
     @GetMapping("/categories")
     public List<Category> getCategories() {
         return service.getCategories();
     }
 
-    //method that are shared with the guest controller
     @GetMapping("/coupons")
-    public List<Coupon> getCouponsByPriceBetween(double minPrice, double maxPrice) {
+    public List<Coupon> getCoupons() {
+        return service.getCoupons();
+    }
+
+    @GetMapping("/couponsbypricebetween/{minPrice}/{maxPrice}")
+    public List<Coupon> getCouponsByPriceBetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
         return service.getCouponsByPriceBetween(minPrice, maxPrice);
     }
-    @GetMapping("/couponsbycategory/{categoryId)")
+
+    @GetMapping("/couponsbycategory/{categoryId}")
     public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
         return service.getCouponsByCategoryId(categoryId);
     }
 
-    @GetMapping("/couponsbycompany/{companyId)")
+    @GetMapping("/couponsbycompany/{companyId}")
     public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
         return service.getCouponsByCompanyId(companyId);
     }
 
-    @GetMapping("/couponsbycompanyandcategory/{companyId)/{categoryId}")
+    @GetMapping("/couponsbycompanyandcategory/{companyId}/{categoryId}")
     public List<Coupon> getCouponsByCompanyIdAndCategoryId(@PathVariable int companyId, @PathVariable int categoryId) {
         return service.getCouponsByCompanyIdAndCategoryId(companyId, categoryId);
     }
 
-    @GetMapping("/couponsbycompanyandprice/{companyId)/{minPrice}/{maxPrice}")
+    @GetMapping("/couponsbycompanyandpricebetween/{companyId}/{minPrice}/{maxPrice}")
     public List<Coupon> getCouponsByCompanyIdAndPriceBetween(@PathVariable int companyId, @PathVariable double minPrice, @PathVariable double maxPrice) {
         return service.getCouponsByCompanyIdAndPriceBetween(companyId, minPrice, maxPrice);
     }
 
-    @GetMapping("/couponsbycategoryandprice/{categoryId)/{minPrice}/{maxPrice}")
+    @GetMapping("/couponsbycategoryandpricebetween/{categoryId}/{minPrice}/{maxPrice}")
     public List<Coupon> getCouponsByCategoryIdAndPriceBetween(@PathVariable int categoryId, @PathVariable double minPrice, @PathVariable double maxPrice) {
         return service.getCouponsByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice);
     }
 
-    @GetMapping("/couponsbycomapnyandcategoryandprice/{companyId}/{categoryId)/{minPrice}/{maxPrice}")
+    @GetMapping("/couponsbycomapnyandcategoryandpricebetween/{companyId}/{categoryId}/{minPrice}/{maxPrice}")
     public List<Coupon> getCouponsByCompanyIdAndCategoryAndPriceBetween(@PathVariable int companyId, @PathVariable int categoryId, @PathVariable  double minPrice, @PathVariable double maxPrice) {
         return service.getCouponsByCompanyIdAndCategoryAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
     }

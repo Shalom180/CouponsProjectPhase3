@@ -62,8 +62,8 @@ public class CustomerService extends ClientService {
         return couponsRepository.findAllByCustomerId(customerID);
     }
 
-    public List<Coupon> getCustomerCoupons(Category category) {
-        return couponsRepository.findAllByCustomerIdAndCategoryId(customerID, category.getId());
+    public List<Coupon> getCustomerCoupons(int categoryId) {
+        return couponsRepository.findAllByCustomerIdAndCategoryId(customerID, categoryId);
     }
 
     public List<Coupon> getCustomerCoupons(double minPrice, double maxPrice) throws NonPositiveValueException, EmailFormatException,
