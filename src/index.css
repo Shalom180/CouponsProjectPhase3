@@ -1,13 +1,106 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Define dark mode color palette */
+:root {
+  /* Color Palette for Dark Mode */
+  --background-color: #121212;
+  --text-color: #e0e0e0;
+  --primary-color: #bb86fc;
+  --secondary-color: #555;
+  --header-bg: #333;
+  --link-color: #bb86fc;
+
+  /* Font Sizes */
+  --font-size-base: 16px;
+  --font-size-large: 1.25rem;
+  --font-size-small: 0.875rem;
+  
+  /* Typography */
+  --font-family-body: 'Arial', sans-serif;
+  --font-family-heading: 'Roboto', sans-serif;
+  --font-family-code: 'Source Code Pro', Menlo, Monaco, Consolas, 'Courier New', monospace;
+  
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 32px;
+  --spacing-lg: 64px;
+  --spacing-xl: 128px;
+  
+  /* Border Radius */
+  --border-radius: 8px;
+
+  /* Shadows */
+  --box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.5);
+
+  /* Transition */
+  --transition: all 0.3s ease;
 }
 
+/* Global body styles for dark mode */
+body {
+  background-color: var(--background-color); /* Dark background */
+  color: var(--text-color); /* Light text color */
+  font-family: var(--font-family-body);
+  font-size: var(--font-size-base);
+  transition: var(--transition);
+}
+
+/* Header styles */
+.header {
+  background-color: var(--header-bg);
+  padding: var(--spacing-sm) var(--spacing-md);
+  box-shadow: var(--box-shadow);
+}
+
+.header h1 {
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-large);
+}
+
+/* Button styles */
+.button {
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-small);
+  transition: background-color 0.3s ease;
+  box-shadow: var(--box-shadow);
+}
+
+/* Button hover state */
+.button:hover {
+  background-color: var(--primary-color);
+}
+
+/* Links */
+a {
+  color: var(--link-color);
+  transition: color 0.3s ease;
+}
+
+/* Link hover state */
+a:hover {
+  color: var(--primary-color);
+}
+
+/* Code styling */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-family-code);
+  color: #ff4081; /* Pinkish color for code */
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 768px) {
+  body {
+    font-size: calc(var(--font-size-base) + 0.5vw); /* Responsive font size */
+  }
+
+  .header {
+    padding: var(--spacing-sm);
+  }
+
+  .button {
+    font-size: var(--font-size-small);
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
 }

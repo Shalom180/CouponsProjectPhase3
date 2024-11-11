@@ -1,0 +1,8 @@
+.Footer {
+	display: flex;
+    justify-content: space-around;
+}
+
+.LogoContainer {
+    width: 1%;
+}

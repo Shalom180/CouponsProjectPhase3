@@ -5,13 +5,13 @@ export class Company {
     name: string;
     email: string;
     password: string;
-    coupons: Set<Coupon>;
+    // coupons: Set<Coupon>;
 
-    constructor(id:number, name:string, email:string, password:string, coupons:Set<Coupon>) {
+    constructor(id:number, name:string, email:string, password:string) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.coupons = coupons;
+        // this.coupons = coupons;
     }
 }
