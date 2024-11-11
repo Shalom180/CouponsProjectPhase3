@@ -27,8 +27,13 @@ public class CompanyService extends ClientService {
     }
 
     //methods
-    public Company login(String email, String password) {
-        return companiesRepository.findByEmailAndPassword(email, password).orElseThrow(()->new NoSuchElementException("User not found"));
+    public boolean login(String email, String password) {
+        Company company = companiesRepository.findByEmailAndPassword(email, password).orElse(null);
+        if (company!= null) {
+            companyID = company.getId();
+            return true;
+        }
+        return false;
     }
 
     public void addCoupon(Coupon coupon) throws NegativeValueException, DateException, EmptyValueException,

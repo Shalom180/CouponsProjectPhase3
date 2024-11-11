@@ -24,24 +24,13 @@ public class LoginManager {
 
 
 
-    public Map<ClientService, ClientType> login(String email, String password) throws WrongEmailOrPasswordException, EmptyValueException {
-        Map<ClientService, ClientType> map = new HashMap<>();
-        try {
-            adminService.login(email, password);
-            map.put(adminService, ClientType.Administrator);
-        } catch (NoSuchElementException e1) {
-            try {
-                companyService.login(email, password);
-                map.put(companyService, ClientType.Company);
-            } catch (NoSuchElementException e2) {
-                try {
-                    customerService.login(email, password);
-                    map.put(customerService, ClientType.Customer);
-                } catch (NoSuchElementException e3) {
-                    throw new WrongEmailOrPasswordException();
-                }
-            }
-        }
-        return map;
+    public ClientService login(String email, String password) throws WrongEmailOrPasswordException, EmptyValueException {
+        if (adminService.login(email, password))
+            return adminService;
+        else if (companyService.login(email, password))
+            return companyService;
+        else if (customerService.login(email, password))
+            return customerService;
+        else throw new WrongEmailOrPasswordException();
     }
 }

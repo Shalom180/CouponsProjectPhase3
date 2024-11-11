@@ -31,9 +31,9 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = request.getHeader("Authorization");
+            String token = request.getHeader("Authorization").replace("Bearer ", "");
             if (activeAdminTokens.contains(token) || activeCompanyTokens.contains(token) || activeCustomerTokens.contains(token)) {
-                DecodedJWT decoded = JWT.decode(token.replace("Bearer ", ""));
+                DecodedJWT decoded = JWT.decode(token);
                 // check info in token
                 if (decoded.getIssuer().equals("JohnCoupon") && decoded.getExpiresAt().after(new Date())) {
                     // all is well, move on

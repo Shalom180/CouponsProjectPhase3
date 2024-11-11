@@ -1,6 +1,7 @@
 package couponsProjectPhase3.services;
 
 import couponsProjectPhase3.beans.Category;
+import couponsProjectPhase3.beans.Company;
 import couponsProjectPhase3.beans.Coupon;
 import couponsProjectPhase3.beans.Customer;
 import couponsProjectPhase3.exceptions.*;
@@ -27,8 +28,13 @@ public class CustomerService extends ClientService {
     }
 
     //methods
-    public Customer login(String email, String password) {
-        return customersRepository.findByEmailAndPassword(email, password).orElseThrow(()->new NoSuchElementException("Customer not found"));
+    public boolean login(String email, String password) {
+        Customer customer = customersRepository.findByEmailAndPassword(email, password).orElse(null);
+        if (customer!= null) {
+            customerID = customer.getId();
+            return true;
+        }
+        return false;
     }
 
     public void purchaseCoupon(Coupon coupon) throws EmptyValueException, AlreadyPurchasedException, UnavailableCouponException, NonexistantObjectException {
