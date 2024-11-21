@@ -20,8 +20,6 @@ public class CompanyService extends ClientService {
     private int companyID;
 
     //ctor
-
-
     public CompanyService(CompaniesRepository companiesRepository, CouponsRepository couponsRepository, CustomersRepository customersRepository, CategoriesRepository categoriesRepository) {
         super(companiesRepository, couponsRepository, customersRepository, categoriesRepository);
     }

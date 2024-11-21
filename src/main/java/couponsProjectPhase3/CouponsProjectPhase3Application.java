@@ -1,5 +1,6 @@
 package couponsProjectPhase3;
 
+import couponsProjectPhase3.beans.TokenProps;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.EmailFormatException;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.NameException;
 import couponsProjectPhase3.exceptions.NonexistantObjectException;
@@ -11,7 +12,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootApplication
 public class CouponsProjectPhase3Application {
@@ -31,17 +34,8 @@ public class CouponsProjectPhase3Application {
     }
 
     @Bean
-    public List<String> activeAdminTokens() {
-        return new ArrayList<>();
+    public Map<String, TokenProps> activeTokens() {
+        return new HashMap<>();
     }
 
-    @Bean
-    public List<String> activeCompanyTokens() {
-        return new ArrayList<>();
-    }
-
-    @Bean
-    public List<String> activeCustomerTokens() {
-        return new ArrayList<>();
-    }
 }

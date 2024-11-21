@@ -1,5 +1,6 @@
 package couponsProjectPhase3.beans;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.sql.Date;
@@ -13,6 +14,7 @@ public class Coupon {
     private int id;
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonManagedReference
     private Company company;
     @ManyToOne
     @JoinColumn(nullable = false)

@@ -1,14 +1,9 @@
 package couponsProjectPhase3.beans;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
-import java.util.Set;
-
-
 @Entity
-@Table(name = "companies")
-public class Company{
+public class Admin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -16,20 +11,15 @@ public class Company{
     private String name, email;
     @Column(nullable = false)
     private String password;
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER)
-    @JsonBackReference
-    private Set<Coupon> coupons;
 
     //ctors
-    public Company() {
+    public Admin() {
     }
 
-    //for insert
-    public Company(String name, String email, String password, Set<Coupon> coupons) {
+    public Admin(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.coupons = coupons;
     }
 
     //getters & setters
@@ -61,23 +51,14 @@ public class Company{
         this.password = password;
     }
 
-    public Set<Coupon> getCoupons() {
-        return coupons;
-    }
-
-    public void setCoupons(Set<Coupon> coupons) {
-        this.coupons = coupons;
-    }
-
     //methods
     @Override
     public String toString() {
-        return "Company{" +
+        return "Admin{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", coupons=" + coupons +
                 '}';
     }
 }

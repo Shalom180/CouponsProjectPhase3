@@ -12,99 +12,89 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/guest")
 public class GuestController {
-    private List<String> activeAdminTokens;
-    private List<String> activeCompanyTokens;
-    private List<String> activeCustomerTokens;
+    private Map<String, TokenProps> activeTokens;
     private AdminService adminService;
-    private CompanyService companyService;
     private CustomerService customerService;
     private LoginManager loginManager;
 
     //ctor
-
-
-    public GuestController(List<String> activeAdminTokens, List<String> activeCompanyTokens, List<String> activeCustomerTokens, AdminService adminService, CompanyService companyService, CustomerService customerService, LoginManager loginManager) {
-        this.activeAdminTokens = activeAdminTokens;
-        this.activeCompanyTokens = activeCompanyTokens;
-        this.activeCustomerTokens = activeCustomerTokens;
+    public GuestController(Map<String, TokenProps> activeTokens, AdminService adminService, CustomerService customerService, LoginManager loginManager) {
+        this.activeTokens = activeTokens;
         this.adminService = adminService;
-        this.companyService = companyService;
         this.customerService = customerService;
         this.loginManager = loginManager;
     }
 
     //methods
     @PostMapping("/signup")
-    public String customerSignUp(@RequestBody Customer customer) throws EmptyValueException, UnallowedUpdateException {
+    public String customerSignUp(@RequestBody Customer customer) throws EmptyValueException, UnallowedUpdateException, SQLException, WrongEmailOrPasswordException {
         adminService.addCustomer(customer);
-        return "User " + customer.getFirstName() + " " + customer.getLastName() + " added";
+        return login(customer.getEmail(), customer.getPassword());
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public String login(@RequestBody String email, @RequestBody String password) throws WrongEmailOrPasswordException, EmptyValueException, NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException {
         ClientService clientService = loginManager.login(email, password);
-        if (clientService instanceof AdminService){
-            String adminToken = createAdminToken();
-            activeAdminTokens.add(adminToken);
-            return adminToken;
-        }
-        else if (clientService instanceof CompanyService) {
+        String token = createToken(clientService);
+        //todo change null!
+        activeTokens.put(token, new TokenProps(clientService));
+        return token;
+    }
+
+    @PostMapping("signout")
+    public String signOut(@RequestHeader("Authorization") String authorization) throws EmptyValueException {
+        if (authorization == null || authorization.isEmpty())
+            throw new EmptyValueException();
+        String username = JWT.decode(authorization).getClaim("username").asString();
+        activeTokens.remove(authorization);
+        return username  + " logged out successfully";
+    }
+
+    private String createToken(ClientService clientService) throws EmptyValueException {
+        Date expires = new Date();
+        expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24);
+        String token = "";
+        if (clientService == null)
+            throw new EmptyValueException();
+
+        else if (clientService instanceof AdminService) {
+            Admin admin = ((AdminService) clientService).getAdminDetails();
+            token = JWT.create()
+                    .withIssuer("JohnCoupon")
+                    .withIssuedAt(new Date())
+                    .withClaim("clientType", "ADMINISTRATOR")
+                    .withClaim("username", admin.getName())
+                    .withClaim("email", admin.getEmail())
+                    .withExpiresAt(expires)
+                    .sign(Algorithm.none());
+        } else if (clientService instanceof CompanyService) {
             Company company = ((CompanyService) clientService).getCompanyDetails();
-            String companyToken = createCompanyToken(company);
-            activeCompanyTokens.add(companyToken);
-            return companyToken;
+            token = JWT.create()
+                    .withIssuer("JohnCoupon")
+                    .withIssuedAt(new Date())
+                    .withClaim("clientType", "COMPANY")
+                    .withClaim("username", company.getName())
+                    .withClaim("email", company.getEmail())
+                    .withExpiresAt(expires)
+                    .sign(Algorithm.none());
         } else if (clientService instanceof CustomerService) {
             Customer customer = ((CustomerService) clientService).getCustomerDetails();
-            String customerToken = createCustomerToken(customer);
-            activeCustomerTokens.add(customerToken);
-            return customerToken;
-        } else throw new WrongEmailOrPasswordException();
+            token = JWT.create()
+                    .withIssuer("JohnCoupon")
+                    .withIssuedAt(new Date())
+                    .withClaim("clientType", "CUSTOMER")
+                    .withClaim("username", customer.getFirstName() + " " + customer.getLastName())
+                    .withClaim("email", customer.getEmail())
+                    .withExpiresAt(expires)
+                    .sign(Algorithm.none());
+        }
+        return token;
     }
 
-    //todo add sign out method
-
-    private String createAdminToken() {
-        Date expires = new Date();
-        expires.setTime(expires.getTime()+1000*60*60);
-        return JWT.create()
-                .withIssuer("JohnCoupon")
-                .withIssuedAt(new Date())
-                .withClaim("username", "admin")
-                .withExpiresAt(expires)
-                .sign(Algorithm.none());
-    }
-
-    private String createCompanyToken(Company company) {
-        Date expires = new Date();
-        expires.setTime(expires.getTime()+1000*60*60);
-        return JWT.create()
-                .withIssuer("JohnCoupon")
-                .withIssuedAt(new Date())
-                .withClaim("id", company.getId())
-                .withClaim("name", company.getName())
-                .withClaim("email", company.getEmail())
-                .withExpiresAt(expires)
-                .sign(Algorithm.none());
-    }
-
-    private String createCustomerToken(Customer customer) {
-        Date expires = new Date();
-        expires.setTime(expires.getTime()+1000*60*60);
-        return JWT.create()
-                .withIssuer("JohnCoupon")
-                .withIssuedAt(new Date())
-                .withClaim("id", customer.getId())
-                .withClaim("firstname", customer.getFirstName())
-                .withClaim("lastname", customer.getLastName())
-                .withClaim("email", customer.getEmail())
-                .withExpiresAt(expires)
-                .sign(Algorithm.none());
-    }
 
     //method that are shared with the customer controller
     @GetMapping("/categories")
@@ -114,43 +104,52 @@ public class GuestController {
 
     @GetMapping("/coupons")
     public List<Coupon> getCoupons() {
-        return customerService.getCoupons();
+        List<Coupon> coups =  customerService.getCoupons();
+        System.out.println(coups);
+        return coups;
     }
 
-    @GetMapping("/coupons/{minPrice}/{maxPrice}")
-    public List<Coupon> getCouponsByPriceBetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
-        return customerService.getCouponsByPriceBetween(minPrice, maxPrice);
-    }
-    @GetMapping("/couponsbycategory/{categoryId}")
-    public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
-        return customerService.getCouponsByCategoryId(categoryId);
-    }
 
-    @GetMapping("/couponsbycompany/{companyId}")
-    public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
-        return customerService.getCouponsByCompanyId(companyId);
-    }
-
-    @GetMapping("/couponsbycompanyandcategory/{companyId}/{categoryId}")
-    public List<Coupon> getCouponsByCompanyIdAndCategoryId(@PathVariable int companyId, @PathVariable int categoryId) {
-        return customerService.getCouponsByCompanyIdAndCategoryId(companyId, categoryId);
-    }
-
-    @GetMapping("/couponsbycompanyandprice/{companyId}/{minPrice}/{maxPrice}")
-    public List<Coupon> getCouponsByCompanyIdAndPriceBetween(@PathVariable int companyId, @PathVariable double minPrice, @PathVariable double maxPrice) {
-        return customerService.getCouponsByCompanyIdAndPriceBetween(companyId, minPrice, maxPrice);
-    }
-
-    @GetMapping("/couponsbycategoryandprice/{categoryId}/{minPrice}/{maxPrice}")
-    public List<Coupon> getCouponsByCategoryIdAndPriceBetween(@PathVariable int categoryId, @PathVariable double minPrice, @PathVariable double maxPrice) {
-        return customerService.getCouponsByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice);
-    }
-
-    @GetMapping("/couponsbycomapnyandcategoryandprice/{companyId}/{categoryId}/{minPrice}/{maxPrice}")
-    public List<Coupon> getCouponsByCompanyIdAndCategoryAndPriceBetween(@PathVariable int companyId, @PathVariable int categoryId, @PathVariable  double minPrice, @PathVariable double maxPrice) {
-        return customerService.getCouponsByCompanyIdAndCategoryAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
-    }
-
+//todo decide what to do with it
+//    @GetMapping("/coupons/{minPrice}/{maxPrice}")
+//    public List<Coupon> getCouponsByPriceBetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
+//        return customerService.getCouponsByPriceBetween(minPrice, maxPrice);
+//    }
+//
+//    @GetMapping("/couponsbycategory/{categoryId}")
+//    public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
+//        return customerService.getCouponsByCategoryId(categoryId);
+//    }
+//
+//    @GetMapping("/couponsbycompany/{companyId}")
+//    public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
+//        return customerService.getCouponsByCompanyId(companyId);
+//    }
+//
+//    @GetMapping("/couponsbycompanyandcategory/{companyId}/{categoryId}")
+//    public List<Coupon> getCouponsByCompanyIdAndCategoryId(@PathVariable int companyId,
+//                                                           @PathVariable int categoryId) {
+//        return customerService.getCouponsByCompanyIdAndCategoryId(companyId, categoryId);
+//    }
+//
+//    @GetMapping("/couponsbycompanyandprice/{companyId}/{minPrice}/{maxPrice}")
+//    public List<Coupon> getCouponsByCompanyIdAndPriceBetween(@PathVariable int companyId,
+//                                                             @PathVariable double minPrice, @PathVariable double maxPrice) {
+//        return customerService.getCouponsByCompanyIdAndPriceBetween(companyId, minPrice, maxPrice);
+//    }
+//
+//    @GetMapping("/couponsbycategoryandprice/{categoryId}/{minPrice}/{maxPrice}")
+//    public List<Coupon> getCouponsByCategoryIdAndPriceBetween(@PathVariable int categoryId,
+//                                                              @PathVariable double minPrice, @PathVariable double maxPrice) {
+//        return customerService.getCouponsByCategoryIdAndPriceBetween(categoryId, minPrice, maxPrice);
+//    }
+//
+//    @GetMapping("/couponsbycomapnyandcategoryandprice/{companyId}/{categoryId}/{minPrice}/{maxPrice}")
+//    public List<Coupon> getCouponsByCompanyIdAndCategoryAndPriceBetween(@PathVariable int companyId,
+//                                                                        @PathVariable int categoryId, @PathVariable double minPrice, @PathVariable double maxPrice) {
+//        return customerService.getCouponsByCompanyIdAndCategoryAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
+//    }
 
 
 }
+

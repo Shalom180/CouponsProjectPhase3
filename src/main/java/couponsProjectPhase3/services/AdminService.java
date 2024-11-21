@@ -1,36 +1,38 @@
 package couponsProjectPhase3.services;
 
+import couponsProjectPhase3.beans.Admin;
 import couponsProjectPhase3.beans.Category;
 import couponsProjectPhase3.beans.Company;
 import couponsProjectPhase3.beans.Customer;
 import couponsProjectPhase3.exceptions.*;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.*;
-import couponsProjectPhase3.repositories.CategoriesRepository;
-import couponsProjectPhase3.repositories.CompaniesRepository;
-import couponsProjectPhase3.repositories.CouponsRepository;
-import couponsProjectPhase3.repositories.CustomersRepository;
+import couponsProjectPhase3.repositories.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class AdminService extends ClientService {
+    private int adminId;
+    private AdminRepository adminRepository;
 
     //ctor
-    public AdminService(CompaniesRepository companiesRepository, CouponsRepository couponsRepository,
-                        CustomersRepository customersRepository, CategoriesRepository categoriesRepository) {
+    public AdminService(CompaniesRepository companiesRepository, CouponsRepository couponsRepository, CustomersRepository customersRepository, CategoriesRepository categoriesRepository, AdminRepository adminRepository) {
         super(companiesRepository, couponsRepository, customersRepository, categoriesRepository);
+        this.adminRepository = adminRepository;
     }
 
     //methods
     public boolean login(String email, String password) throws EmptyValueException {
-        if (email == null || email.isEmpty() || password == null || password.isEmpty())
-            throw new EmptyValueException();
-        return email.equalsIgnoreCase("admin@admin.com") && password.equals("admin");
+        Admin admin = adminRepository.findByEmailAndPassword(email, password).orElse(null);
+        if (admin != null) {
+            adminId = admin.getId();
+            return true;
+        }
+        return false;
     }
 
-    public void addCompany(Company company) throws EmailFormatException, PasswordFormatException, EmptyValueException,
-            AlreadyExistingValueException, UnallowedUpdateException {
+    public void addCompany(Company company) throws  EmptyValueException, UnallowedUpdateException {
 
         //we'll check whether we've got an empty value which isn't allowed to be empty
         if (company == null || company.getName() == null || company.getName().isEmpty() || company.getPassword() == null
@@ -203,7 +205,6 @@ public class AdminService extends ClientService {
         return customersRepository.findById(customerId).orElseThrow();
     }
 
-    //todo add categories service methods
     public List<Category> getCategories() {
         return categoriesRepository.findAll();
     }
@@ -257,5 +258,9 @@ public class AdminService extends ClientService {
 
     //right now I do not want to implement a deleteCategory method because it is too risky. Categories can be deleted
     // directly through the DB
+
+    public Admin getAdminDetails() {
+        return adminRepository.findById(adminId).orElse(null);
+    }
 }
 
