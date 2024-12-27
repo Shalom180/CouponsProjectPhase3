@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Container, Link, Grid2, CircularProgress } from '@mui/material';
-import guestService from '../../../services/GuestService';
-
-// Define the structure of the category object returned by the API
-interface Category {
-  id: number;
-  name: string;
-}
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Container, Grid, CircularProgress, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import guestService from "../../../services/GuestService";
+import { Category } from "../../../models/Category";
 
 const Footer = () => {
-  const [categories, setCategories] = useState<string[]>([]); // Categories are now strings
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  const navigate = useNavigate(); // Use useNavigate for navigation
 
   // Fetch categories on component mount
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data: Category[] = await guestService.getCategories(); // Fetch categories
-        setCategories(data.map(category => category.name)); // Map category objects to strings (name)
+        const data: Category[] = await guestService.getCategories();
+        setCategories(data);
         setLoading(false);
       } catch (err) {
-        setError('Failed to load categories');
+        setError("Failed to load categories");
         setLoading(false);
       }
     };
@@ -30,86 +28,75 @@ const Footer = () => {
   }, []);
 
   return (
-    <Box sx={{ backgroundColor: 'var(--background-color)', color: 'var(--text-color)', padding: 'var(--spacing-md) 0' }}>
+    <Box sx={{ backgroundColor: "var(--background-color)", color: "var(--text-color)", padding: "var(--spacing-md) 0" }}>
       <Container maxWidth="lg">
-        <Grid2 container spacing={4}>
+        <Grid container spacing={4}>
           {/* Company Info Section */}
-          <Grid2 component="section" sx={{ xs: 12, md: 4 }}>
+          <Grid item xs={12} md={4}>
             <Box>
               <img
-                src="/pics/JohnCouponLogoNoBG.png" // Update with your actual logo path
+                src="/pics/JohnCouponLogoNoBG.png"
                 alt="Company Logo"
-                style={{ height: '100px', width: 'auto' }}
+                style={{ height: "100px", width: "auto" }}
               />
-              <Typography variant="h6" sx={{ marginTop: 'var(--spacing-sm)' }}>
+              <Typography variant="h6" sx={{ marginTop: "var(--spacing-sm)" }}>
                 JohnCoupon
               </Typography>
-              <Typography variant="body2" sx={{ marginTop: 'var(--spacing-xs)' }}>
+              <Typography variant="body2" sx={{ marginTop: "var(--spacing-xs)" }}>
                 1234 Coupon Lane, Coupon City, Couponland 56789
               </Typography>
             </Box>
-          </Grid2>
+          </Grid>
 
           {/* Navigation Links Section */}
-          <Grid2 component="nav" sx={{ xs: 12, md: 4 }}>
+          <Grid item xs={12} md={4}>
             <Box>
               <Typography variant="h6">NavLinks</Typography>
-              <Box sx={{ marginTop: 'var(--spacing-sm)' }}>
-                <Link
-                  href="#"
+              <Box sx={{ marginTop: "var(--spacing-sm)" }}>
+                <Button
+                  onClick={() => navigate("/about")}
                   sx={{
-                    display: 'block',
-                    color: 'var(--link-color)',
-                    textDecoration: 'none',
-                    marginBottom: 'var(--spacing-xs)',
-                    transition: 'color 0.3s ease',
-                    '&:hover': {
-                      color: 'var(--link-hover-color)', // Optional hover effect
-                    },
+                    display: "block",
+                    color: "var(--link-color)",
+                    textTransform: "none",
+                    marginBottom: "var(--spacing-xs)",
+                    "&:hover": { color: "var(--link-hover-color)" },
                   }}
                 >
                   About
-                </Link>
-                <Link
-                  href="#"
+                </Button>
+                <Button
+                  onClick={() => navigate("/allcompanies")}
                   sx={{
-                    display: 'block',
-                    color: 'var(--link-color)',
-                    textDecoration: 'none',
-                    marginBottom: 'var(--spacing-xs)',
-                    transition: 'color 0.3s ease',
-                    '&:hover': {
-                      color: 'var(--link-hover-color)', // Optional hover effect
-                    },
+                    display: "block",
+                    color: "var(--link-color)",
+                    textTransform: "none",
+                    marginBottom: "var(--spacing-xs)",
+                    "&:hover": { color: "var(--link-hover-color)" },
                   }}
                 >
                   Companies
-                </Link>
-                <Link
-                  href="#"
+                </Button>
+                <Button
+                  onClick={() => navigate("/terms")}
                   sx={{
-                    display: 'block',
-                    color: 'var(--link-color)',
-                    textDecoration: 'none',
-                    marginBottom: 'var(--spacing-xs)',
-                    transition: 'color 0.3s ease',
-                    '&:hover': {
-                      color: 'var(--link-hover-color)', // Optional hover effect
-                    },
+                    display: "block",
+                    color: "var(--link-color)",
+                    textTransform: "none",
+                    marginBottom: "var(--spacing-xs)",
+                    "&:hover": { color: "var(--link-hover-color)" },
                   }}
                 >
                   Terms of Service
-                </Link>
+                </Button>
               </Box>
             </Box>
-          </Grid2>
-
-          
+          </Grid>
 
           {/* Coupon Categories Section */}
-          <Grid2 component="section" sx={{ xs: 12, md: 4 }}>
+          <Grid item xs={12} md={4}>
             <Box>
-              <Typography variant="h6" sx={{ marginBottom: 'var(--spacing-sm)' }}>
+              <Typography variant="h6" sx={{ marginBottom: "var(--spacing-sm)" }}>
                 Coupon Categories
               </Typography>
 
@@ -121,27 +108,32 @@ const Footer = () => {
                 </Typography>
               ) : (
                 <Box>
-                  <ul>
-                    {categories.map((category, index) => (
-                      <li key={index}>
-                        <Link href={`/coupons/category/${category}`} sx={{ textDecoration: 'none', color: 'var(--link-color)' }}>
-                          {category}
-                        </Link>
+                  <ul style={{ listStyle: "none", padding: 0 }}>
+                    {categories.map((category) => (
+                      <li key={category.id}>
+                        <Button
+                          onClick={() => navigate(`/coupons/category/${category.id}`)}
+                          sx={{
+                            textTransform: "none",
+                            color: "var(--link-color)",
+                            "&:hover": { color: "var(--link-hover-color)" },
+                          }}
+                        >
+                          {category.name}
+                        </Button>
                       </li>
                     ))}
                   </ul>
                 </Box>
               )}
             </Box>
-          </Grid2>
-        </Grid2>
+          </Grid>
+        </Grid>
       </Container>
 
       {/* Footer Bottom */}
-      <Box sx={{ textAlign: 'center', marginTop: 'var(--spacing-md)', color: 'var(--footer-text-color)' }}>
-        <Typography variant="body2">
-          &copy; {new Date().getFullYear()} JohnCoupon. All Rights Reserved.
-        </Typography>
+      <Box sx={{ textAlign: "center", marginTop: "var(--spacing-md)", color: "var(--footer-text-color)" }}>
+        <Typography variant="body2">&copy; {new Date().getFullYear()} JohnCoupon. All Rights Reserved.</Typography>
       </Box>
     </Box>
   );

@@ -1,51 +1,26 @@
-import * as React from 'react';
-import { AppProvider } from '@toolpad/core/AppProvider';
-import {
-  SignInPage,
-  type AuthProvider,
-  type AuthResponse,
-} from '@toolpad/core/SignInPage';
-import { useTheme, createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Button, TextField, Typography, Container, Box, CircularProgress } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Link, useNavigate } from 'react-router-dom';
+import authService from '../../../services/AuthService';
+import { LoginRequest } from '../../../models/LoginRequest';
+import { authSlice } from '../../../reducers/AuthSlice';
+import { store } from '../../../store'; // Corrected named import
 
-const providers = [{ id: 'credentials', name: 'Email and password' }];
-
-const signIn: (
-  provider: AuthProvider,
-  formData?: FormData,
-) => Promise<AuthResponse> | void = async (provider, formData) => {
-  const promise = new Promise<AuthResponse>((resolve) => {
-    setTimeout(() => {
-      const email = formData?.get('email');
-      const password = formData?.get('password');
-      alert(
-        `Signing in with "${provider.name}" and credentials: ${email}, ${password}`,
-      );
-      resolve({
-        type: 'CredentialsSignin',
-        error: 'Invalid credentials.',
-      });
-    }, 300);
-  });
-  return promise;
-};
-
-// Create a dark theme using MUI's theme system
-const darkTheme = createTheme({
+const theme = createTheme({
   palette: {
-    mode: 'dark', // Enables dark mode by default
+    mode: 'dark',
     primary: {
-      main: '#bb86fc', // Purple color for primary
-    },
-    secondary: {
-      main: '#03dac6', // Teal for secondary
-    },
-    background: {
-      default: '#121212', // Dark background color
-      paper: '#1e1e1e', // Paper background color (for card-like components)
+      main: '#bb86fc',
     },
     text: {
-      primary: '#e0e0e0', // Light text color for primary text
-      secondary: '#b0b0b0', // Secondary text color
+      primary: '#ffffff',
+      secondary: '#bbbbbb',
+    },
+    background: {
+      default: '#121212',
+      paper: '#1e1e1e',
     },
   },
   typography: {
@@ -59,15 +34,151 @@ const darkTheme = createTheme({
     body1: {
       fontWeight: 400,
     },
+    
   },
 });
 
-export default function NotificationsSignInPageError() {
+const SignInPage: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await authService.login(new LoginRequest(email, password));
+
+      if (response) {
+        store.dispatch(authSlice.actions.login(response)); // Storing JWT token in Redux
+        setToken(response);
+        setError(null);
+
+        const clientType: string = store.getState().auth.clientType;
+        if (clientType === 'ADMINISTRATOR') {
+          navigate('/allcompanies');
+        } else if (clientType === 'COMPANY') {
+          navigate('/coupons/company/' + store.getState().auth.id)
+        }
+          
+          else {
+          navigate('/');
+        }
+      } else {
+        setError('Invalid credentials.');
+      }
+    } catch (err) {
+      console.error(err); // Log the error for debugging
+      setError('An error occurred while signing in. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <ThemeProvider theme={darkTheme}> {/* Wrap everything with ThemeProvider */}
-      <AppProvider theme={darkTheme}>
-        <SignInPage signIn={signIn} providers={providers} />
-      </AppProvider>
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="xs">
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100vh',
+          }}
+        >
+          <Typography variant="h5" gutterBottom>
+            Sign In
+          </Typography>
+
+          {error && (
+            <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>
+              {error}
+            </Typography>
+          )}
+
+          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              required
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              type="email"
+              sx={{
+                '& .MuiInputLabel-root': { color: 'white' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#bb86fc' },
+                  '&:hover fieldset': { borderColor: '#bb86fc' },
+                  '&.Mui-focused fieldset': { borderColor: '#bb86fc' },
+                },
+                color: 'white',
+              }}
+            />
+
+            <TextField
+              label="Password"
+              variant="outlined"
+              fullWidth
+              required
+              margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              type="password"
+              sx={{
+                '& .MuiInputLabel-root': { color: 'white' },
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': { borderColor: '#bb86fc' },
+                  '&:hover fieldset': { borderColor: '#bb86fc' },
+                  '&.Mui-focused fieldset': { borderColor: '#bb86fc' },
+                },
+                color: 'white',
+              }}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              disabled={isLoading}
+              sx={{ marginTop: 2 }}
+            >
+              {isLoading ? <CircularProgress size={24} /> : 'Sign In'}
+            </Button>
+          </form>
+
+          <Typography
+            variant="body2"
+            sx={{
+              marginTop: 2,
+              color: 'var(--text-color)',
+            }}
+          >
+            Don't have an account?{' '}
+            <Link
+              to="/guest/signup"
+              style={{
+                color: '#bb86fc',
+                textDecoration: 'none',
+                fontWeight: 'bold',
+              }}
+            >
+              Sign Up
+            </Link>
+          </Typography>
+        </Box>
+      </Container>
     </ThemeProvider>
   );
-}
+};
+
+export default SignInPage;

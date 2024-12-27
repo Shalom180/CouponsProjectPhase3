@@ -9,6 +9,7 @@ class CustomerService {
     }
 
     async getCustomerCoupons() {
+        console.log('get customer coupons init')
         return (await axios.get<Coupon[]>("http://localhost:8080/customer/mycoupons")).data;
     }
 
@@ -63,3 +64,6 @@ class CustomerService {
         return (await axios.get<Coupon[]>(`http://localhost:8080/customer/couponsbycategoryandpricebetween/${companyId}/${categoryId}/${minPrice}/${maxPrice}`)).data;
     }
 }
+
+const customerService = new CustomerService();
+export default customerService;

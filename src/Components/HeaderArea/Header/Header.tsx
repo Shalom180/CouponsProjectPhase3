@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppProvider } from '@toolpad/core/AppProvider';
+import { Link, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,18 +8,20 @@ import Typography from '@mui/material/Typography';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { AccountCircle } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useDispatch } from 'react-redux';
+import {store} from '../../../store';
+import { authSlice } from '../../../reducers/AuthSlice';
 
-// Set Roboto as the default font
+// Custom theme for dark mode
 const theme = createTheme({
   typography: {
-    fontFamily: '"Roboto", sans-serif', // Set Roboto as the default font
+    fontFamily: '"Roboto", sans-serif',
   },
   palette: {
     mode: 'dark',
@@ -40,16 +42,24 @@ const theme = createTheme({
   },
 });
 
-const pages = ['Home', 'Categories', 'Companies', 'About'];
-const settings = ['Cart', 'Account', 'Logout'];
+const pages = [
+  { name: 'Home', url: '/' },
+  { name: 'Categories', url: '/allcategories' },
+  { name: 'Companies', url: '/allcompanies' },
+  { name: 'About', url: '/about' },
+];
 
 function ResponsiveAppBar() {
+  const dispatch = useDispatch(); // Correct usage of useDispatch
+  const navigate = useNavigate();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -62,27 +72,42 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const settings = [
+    { name: 'Account', type: 'link', url: '/account' },
+    {
+      name: 'Logout',
+      type: 'action',
+      action: () => {
+        dispatch(authSlice.actions.logout());
+        navigate('/'); // Redirect to homepage
+      },
+    },
+  ];
+
   return (
     <ThemeProvider theme={theme}>
       <AppBar position="sticky" sx={{ backgroundColor: 'black' }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            <Box sx={{ display: 'flex', mr: 1 }}>
+            {/* Logo */}
+            <Box sx={{ display: 'flex', mr: 1 }} component={Link} to="/">
               <img
                 src="/pics/JohnCOuponLogoNoBG.png"
                 alt="Logo"
-                style={{ height: '40px', width: 'auto' }} // Adjust the height to fit your design
+                style={{ height: '40px', width: 'auto' }}
               />
             </Box>
+
+            {/* Main Title */}
             <Typography
               variant="h6"
               noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
+              component={Link}
+              to="/"
               sx={{
                 mr: 2,
                 display: { xs: 'none', md: 'flex' },
-                fontFamily: '"Roboto", sans-serif', // Specify Roboto here if you want to override specific components
+                fontFamily: '"Roboto", sans-serif',
                 fontWeight: 700,
                 letterSpacing: '.3rem',
                 color: 'inherit',
@@ -92,10 +117,11 @@ function ResponsiveAppBar() {
               JohnCoupon
             </Typography>
 
+            {/* Mobile Menu */}
             <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
               <IconButton
                 size="large"
-                aria-label="account of current user"
+                aria-label="open menu"
                 aria-controls="menu-appbar"
                 aria-haspopup="true"
                 onClick={handleOpenNavMenu}
@@ -120,73 +146,85 @@ function ResponsiveAppBar() {
                 sx={{ display: { xs: 'block', md: 'none' } }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={handleCloseNavMenu}>
-                    <Typography sx={{ textAlign: 'center' }}>{page}</Typography>
+                  <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">
+                      <Link to={page.url} style={{ textDecoration: 'none', color: 'inherit' }}>
+                        {page.name}
+                      </Link>
+                    </Typography>
                   </MenuItem>
                 ))}
               </Menu>
             </Box>
 
-            <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href="#app-bar-with-responsive-menu"
-              sx={{
-                mr: 2,
-                display: { xs: 'flex', md: 'none' },
-                flexGrow: 1,
-                fontFamily: '"Roboto", sans-serif', // Ensure Roboto for smaller screens
-                fontWeight: 700,
-                letterSpacing: '.3rem',
-                color: 'inherit',
-                textDecoration: 'none',
-              }}
-            >
-              JohnCoupon
-            </Typography>
-
+            {/* Desktop Navigation */}
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
               {pages.map((page) => (
                 <Button
-                  key={page}
+                  key={page.name}
+                  component={Link}
+                  to={page.url}
                   onClick={handleCloseNavMenu}
                   sx={{ my: 2, color: 'white', display: 'block' }}
                 >
-                  {page}
+                  {page.name}
                 </Button>
               ))}
             </Box>
 
+            {/* User Account Section */}
             <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <AccountCircle color="secondary"></AccountCircle>
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: '45px' }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: 'top',
-                  horizontal: 'right',
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: 'center' }}>{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
+              {localStorage.getItem('token') ? (
+                <>
+                  {'Hello ' + store.getState().auth.username} <span></span>
+                  <Tooltip title="Open settings">
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <AccountCircle color="secondary" />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    sx={{ mt: '45px' }}
+                    id="menu-appbar"
+                    anchorEl={anchorElUser}
+                    anchorOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={Boolean(anchorElUser)}
+                    onClose={handleCloseUserMenu}
+                  >
+                    {settings.map((setting) => (
+                      <MenuItem
+                        key={setting.name}
+                        onClick={() => {
+                          handleCloseUserMenu();
+                          if (setting.type === 'link' && setting.url) {
+                            navigate(setting.url);
+                          } else if (setting.type === 'action' && setting.action) {
+                            setting.action();
+                          }
+                        }}
+                      >
+                        <Typography textAlign="center">{setting.name}</Typography>
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              ) : (
+                <Button
+                  component={Link}
+                  to="/guest/login"
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: 'white', display: 'block' }}
+                >
+                  Sign in/Sign up
+                </Button>
+              )}
             </Box>
           </Toolbar>
         </Container>

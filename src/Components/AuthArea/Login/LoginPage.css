@@ -1,3 +1,79 @@
-.Login {
-	
-}
+/* General Dark Mode Styles */
+body {
+    background-color: #121212; /* Dark background */
+    color: #e0e0e0; /* Light text color */
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  /* Container styles */
+  .sign-in-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+  }
+  
+  /* Typography styles */
+  .sign-in-title {
+    font-weight: 700;
+    color: #bb86fc; /* Light purple for heading */
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: #f44336; /* Red color for error */
+    margin-bottom: 15px;
+  }
+  
+  .success-message {
+    color: #4caf50; /* Green color for success */
+    margin-top: 15px;
+  }
+  
+  /* TextField (input) styles */
+  .text-field {
+    background-color: #1e1e1e; /* Dark background for inputs */
+    color: #e0e0e0; /* Light text color inside inputs */
+    margin: 10px 0;
+  }
+  
+  .text-field label {
+    color: #b0b0b0; /* Lighter label color */
+  }
+  
+  .text-field input {
+    color: #e0e0e0; /* Text input color */
+  }
+  
+  /* Button styles */
+  .sign-in-button {
+    background-color: #6200ea; /* Purple button */
+    color: white;
+    margin-top: 20px;
+  }
+  
+  .sign-in-button:disabled {
+    background-color: #9e9e9e; /* Disabled button color */
+  }
+  
+  .sign-in-button svg {
+    margin-right: 10px;
+  }
+  
+  /* CircularProgress (loading spinner) styles */
+  .spinner {
+    margin-right: 10px;
+  }
+  
+  /* Box containing the token info */
+  .token-box {
+    margin-top: 20px;
+    background-color: #333333;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    text-align: center;
+  }
+  
