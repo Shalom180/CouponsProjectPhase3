@@ -26,6 +26,8 @@ export function EditCompanyPage(): JSX.Element {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<FormInputs>();
     const navigate = useNavigate();
     const { id } = useParams(); // To get the company ID from the URL
+    const clientType = store.getState().auth.clientType;
+    const isEditingAllowed = clientType === "ADMINISTRATOR";
 
     useEffect(() => {
         // Fetch company data based on the ID
@@ -56,7 +58,7 @@ export function EditCompanyPage(): JSX.Element {
     const onSubmit: SubmitHandler<FormInputs> = async (data) => {
         setLoading(true);
         try {
-            if (store.getState().auth.clientType !== "ADMINISTRATOR") {
+            if (!isEditingAllowed) {
                 throw new Error("Only an admin can edit company data.");
             }
 
@@ -74,7 +76,7 @@ export function EditCompanyPage(): JSX.Element {
 
     const authState = store.getState().auth;
 
-    if (authState.clientType !== "ADMINISTRATOR") {
+    if (!isEditingAllowed) {
         return (
             <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
                 <Typography variant="h4" color="error">

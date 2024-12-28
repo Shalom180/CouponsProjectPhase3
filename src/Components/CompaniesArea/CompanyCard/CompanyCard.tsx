@@ -29,7 +29,7 @@ export function CompanyCard(props: CompanyProps): JSX.Element {
     const handleEditClick = (event: React.MouseEvent) => {
         event.preventDefault(); // Prevent default navigation from the card link
         event.stopPropagation(); // Prevent the link click
-        navigate('/admin/editcompany/' + company.id); // Navigate to edit page
+        navigate('/editcompany/' + company.id); // Navigate to edit page
     };
 
     // Function to handle Delete FAB click event

@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { AccountCircle } from '@mui/icons-material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
-import {store} from '../../../store';
+import { store } from '../../../store';
 import { authSlice } from '../../../reducers/AuthSlice';
 
 // Custom theme for dark mode
@@ -42,16 +42,19 @@ const theme = createTheme({
   },
 });
 
-const pages = [
-  { name: 'Home', url: '/' },
-  { name: 'Categories', url: '/allcategories' },
-  { name: 'Companies', url: '/allcompanies' },
-  { name: 'About', url: '/about' },
-];
+interface Page {
+  name: string;
+  url: string;
+}
 
 function ResponsiveAppBar() {
-  const dispatch = useDispatch(); // Correct usage of useDispatch
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // Retrieve state from the Redux store
+  const clientType = store.getState().auth.clientType;
+  const clientId = store.getState().auth.id;
+  const username = store.getState().auth.username;
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
@@ -72,8 +75,27 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  // Dynamically calculate the pages based on the authentication state
+  const pages: Page[] = [
+    { name: 'Home', url: '/' },
+    { name: 'Categories', url: '/allcategories' },
+    { name: 'Companies', url: '/allcompanies' },
+    ...(clientType === 'ADMINISTRATOR' ? [{ name: 'Customers', url: '/allcustomers' }] : []),
+    { name: 'About', url: '/about' },
+  ];
   const settings = [
-    { name: 'Account', type: 'link', url: '/account' },
+    {
+      name: 'Account',
+      type: 'link',
+      url:
+        clientType === 'ADMINISTRATOR'
+          ? '/admin'
+          : clientType === 'COMPANY'
+          ? `/company/${clientId}`
+          : clientType === 'CUSTOMER'
+          ? `/onecustomer/${clientId}`
+          : '/',
+    },
     {
       name: 'Logout',
       type: 'action',
@@ -83,6 +105,7 @@ function ResponsiveAppBar() {
       },
     },
   ];
+  
 
   return (
     <ThemeProvider theme={theme}>
@@ -176,7 +199,7 @@ function ResponsiveAppBar() {
             <Box sx={{ flexGrow: 0 }}>
               {localStorage.getItem('token') ? (
                 <>
-                  {'Hello ' + store.getState().auth.username} <span></span>
+                  {`Hello ${username || 'User'}`}
                   <Tooltip title="Open settings">
                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                       <AccountCircle color="secondary" />
@@ -234,3 +257,5 @@ function ResponsiveAppBar() {
 }
 
 export default ResponsiveAppBar;
+
+

@@ -25,7 +25,7 @@ export function OneCompanyPage(): JSX.Element {
     // Function to handle Edit FAB click event
     const handleEditFabClick = () => {
         if (company?.id) {
-            navigate(`/admin/editcompany/${company.id}`);
+            navigate(`/editcompany/${company.id}`);
         }
     };
 
@@ -41,7 +41,7 @@ export function OneCompanyPage(): JSX.Element {
         try {
             await adminService.deleteCompany(company.id);
             alert("Company deleted successfully!");
-            navigate("allcompanies/"); // Redirect after deletion
+            navigate("/allcompanies/"); // Redirect after deletion
         } catch (err: unknown) {
             if (err instanceof AxiosError) {
                 const errorMessage = err.response?.data?.message || "An unknown error occurred.";

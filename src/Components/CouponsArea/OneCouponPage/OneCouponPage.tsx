@@ -4,7 +4,7 @@ import { Coupon } from "../../../models/Coupon";
 import guestService from "../../../services/GuestService";
 import customerService from "../../../services/CustomerService";
 import companyService from "../../../services/CompanyService";
-import { store } from "../../../store"; 
+import { store } from "../../../store";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -33,6 +33,10 @@ export function OneCouponPage(): JSX.Element {
     const [isCouponPurchased, setIsCouponPurchased] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
+    const clientType = store.getState().auth.clientType;
+    const clientId = store.getState().auth.id;
+
+    const isLoggedIn = clientType !== ''
 
     // Function to handle Edit FAB click event
     const handleEditFabClick = () => {
@@ -70,7 +74,7 @@ export function OneCouponPage(): JSX.Element {
 
     // Check if the coupon is already purchased by the customer
     useEffect(() => {
-        if (coupon && store.getState().auth.clientType === "CUSTOMER") {
+        if (coupon && clientType === "CUSTOMER") {
             customerService.getCustomerCoupons()
                 .then(response => {
                     if (response) {
@@ -111,12 +115,12 @@ export function OneCouponPage(): JSX.Element {
 
     // Handle coupon deletion
     const handleDelete = async () => {
-        if (!coupon || store.getState().auth.clientType !== "COMPANY" || store.getState().auth.id !== coupon.company.id) return;
+        if (!coupon || clientType !== "COMPANY" || clientId !== coupon.company.id) return;
 
         try {
             await companyService.deleteCoupon(coupon.id);
             alert("Coupon deleted successfully!");
-            navigate("coupons/company/"+ coupon.company.id); // Redirect after deletion
+            navigate("/coupons/company/" + coupon.company.id); // Redirect after deletion
         } catch (err: unknown) {
             if (err instanceof AxiosError) {
                 const errorMessage = err.response?.data?.message || "An unknown error occurred.";
@@ -214,36 +218,71 @@ export function OneCouponPage(): JSX.Element {
                                     Price: ${coupon.price}
                                 </Typography>
                             </Box>
-                            {store.getState().auth.clientType === "CUSTOMER" && (
-                                isCouponPurchased ? (
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        sx={{
-                                            width: "100%",
-                                            backgroundColor: "var(--secondary-color)",
-                                            "&:hover": { backgroundColor: "var(--primary-color)" },
-                                        }}
-                                        disabled
-                                    >
-                                        Coupon Was Already Purchased
-                                    </Button>
-                                ) : (
-                                    <Button
-                                        onClick={() => setOpenPurchaseDialog(true)}
-                                        variant="contained"
-                                        color="primary"
-                                        size="large"
-                                        sx={{
-                                            width: "100%",
-                                            backgroundColor: "var(--secondary-color)",
-                                            "&:hover": { backgroundColor: "var(--primary-color)" },
-                                        }}
-                                    >
-                                        Buy Coupon
-                                    </Button>
-                                )
+
+                            {!isLoggedIn && (<Button
+                                onClick={() => navigate('/guest/login')}
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                sx={{
+                                    width: "100%",
+                                    backgroundColor: "var(--secondary-color)",
+                                    "&:hover": { backgroundColor: "var(--primary-color)" },
+                                }}
+                            >
+                                Log In To Purchase Coupon
+                            </Button>
+                            )}
+
+                            {isLoggedIn && clientType !== 'CUSTOMER' && (
+                                <Button
+                                variant="contained"
+                                color="primary"
+                                size="large"
+                                sx={{
+                                    width: "100%",
+                                    backgroundColor: "var(--secondary-color)",
+                                    "&:hover": { backgroundColor: "var(--primary-color)" },
+                                }}
+                                >
+                                    Log In As A Customer To Purchase Coupon
+                                </Button>
+                            )}
+
+{clientType === 'CUSTOMER' && isCouponPurchased && (
+    <Button
+        variant="contained"
+        color="primary"
+        size="large"
+        sx={{
+            width: "100%",
+            backgroundColor: "var(--secondary-color) !important",
+            color: "var(--text-color) !important",
+            "&:hover": { backgroundColor: "var(--primary-color)" },
+
+            opacity: 0.7,
+        }}
+        disabled
+    >
+        Coupon Was Already Purchased
+    </Button>
+)}
+
+
+                            {clientType === 'CUSTOMER' && !isCouponPurchased && (
+                                <Button
+                                    onClick={() => setOpenPurchaseDialog(true)}
+                                    variant="contained"
+                                color="primary"
+                                size="large"
+                                sx={{
+                                    width: "100%",
+                                    backgroundColor: "var(--secondary-color)",
+                                    "&:hover": { backgroundColor: "var(--primary-color)" },
+                                }}
+                                >
+                                    Buy Coupon
+                                </Button>
                             )}
                         </CardContent>
                     </Grid>

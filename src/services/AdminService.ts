@@ -5,8 +5,19 @@ import { addCompany, deleteCompany, fetchCompanies, updateCompany } from "../red
 import { Customer } from "../models/Customer";
 import { Category } from "../models/Category";
 import { addCategory, fetchCategories, updateCategory } from "../reducers/CategoriesSlice";
+import { Admin } from "../models/Admin";
 
 class AdminService {
+
+    async getAdminDetails() {
+        try {
+            return (await axios.get<Admin>("http://localhost:8080/admin")).data;
+        } catch (error) {
+            console.error("Error fetching admin:", error);
+            throw error; // Propagate the error to be handled in the calling component
+        }
+    }
+
     async addCompany(company: Company) {
         try {
             const response = await axios.post<Company>("http://localhost:8080/admin/company", company);

@@ -236,7 +236,6 @@ export function AddCouponPage(): JSX.Element {
                             <TextField
                                 fullWidth
                                 label="Image URL"
-                                {...register("image", { required: "Image URL is required" })}
                                 error={!!errors.image}
                                 helperText={errors.image?.message}
                                 InputProps={inputProps}

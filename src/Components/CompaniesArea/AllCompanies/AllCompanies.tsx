@@ -52,8 +52,7 @@ export function AllCompanies(): JSX.Element {
 
     return (
         <div className="AllCompanies">
-            // Add banner with box
-            
+          
             <Banner bannerImage="" bannerLogo="/pics/greenBGJC.jpg" />
             <Box
                 display="flex"

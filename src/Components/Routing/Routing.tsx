@@ -22,6 +22,8 @@ import { AllCouponsByCompany } from "../CouponsArea/AllCouponsByCompany/AllCoupo
 import { AllCouponsByCategory } from "../CouponsArea/AllCouponsByCategory/AllCouponsByCategory";
 import { AddCompanyPage } from "../CompaniesArea/AddCompanyPage/AddCompanyPage";
 import { OneCompanyPage } from "../CompaniesArea/OneCompanyPage/OneCompanyPage";
+import { OneCustomerPage } from "../CustomersArea/OneCustomerPage/OneCustomerPage";
+import OneAdminPage from "../AdminArea/OneAdminPage/OneAdminPage";
 
 export function Routing(): JSX.Element {
     // Access clientType from Redux store
@@ -46,11 +48,13 @@ export function Routing(): JSX.Element {
                 <Route path="/allcompanies" element={<AllCompanies />} />
                 <Route path="/company/:id" element={<OneCompanyPage />} />
                 <Route path="/admin/addcompany" element={<AddCompanyPage />} />
-                <Route path="/admin/editcompany/:id" element={<EditCompanyPage />} />
+                <Route path="/editcompany/:id" element={<EditCompanyPage />} />
                 <Route path="/allcustomers" element={<AllCustomersPage />} />
+                <Route path="/onecustomer/:id" element={<OneCustomerPage />} />
                 <Route path="/guest/login" element={<LoginPage />} />
                 <Route path="/guest/signup" element={<SignUp />} />
                 <Route path="/editcustomer/:id" element={<EditCustomerPage />} />
+                <Route path="/admin" element={<OneAdminPage />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/terms" element={<Terms />} />
 
