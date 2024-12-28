@@ -1,5 +1,7 @@
 package couponsProjectPhase3.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,6 +12,7 @@ public class Admin {
     @Column(nullable = false, unique = true)
     private String name, email;
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Allows deserialization but not serialization    private String password;
     private String password;
 
     //ctors

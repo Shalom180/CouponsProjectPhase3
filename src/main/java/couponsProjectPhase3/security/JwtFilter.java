@@ -35,10 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
                 // check info in token
                 Date now = new Date();
                 TokenProps tokenProps = activeTokens.get(token);
-                if (decoded.getIssuer().equals("JohnCoupon") && decoded.getExpiresAt().after(now) && tokenProps.getLastTimeActive().getTime() + 1000*60*30 < now.getTime()) {
+                if (decoded.getIssuer().equals("JohnCoupon") && decoded.getExpiresAt().after(now) && tokenProps.getLastTimeActive().getTime() >= now.getTime() - 1000*60*60) {
                    tokenProps.setLastTimeActive(now);
                     // all is well, move on
                     filterChain.doFilter(request, response); // move to next filter on the chain, if last filter send to dispatcher
+                } else { response.setStatus(401);
+                    response.getWriter().write("Token is not valid, it may be expired, please log in!");
                 }
             } else {
                 response.setStatus(401);

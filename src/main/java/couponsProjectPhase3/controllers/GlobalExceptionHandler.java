@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(UnallowedUpdateException.class)
+    @ExceptionHandler({UnallowedUpdateException.class, EmptyValueException.class})
     public ResponseEntity<String> handleUnallowedUpdate(UnallowedUpdateException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }

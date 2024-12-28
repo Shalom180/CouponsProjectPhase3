@@ -26,34 +26,44 @@ public class CustomerController {
 
 
     //methods
+
+    private CustomerService validateAndGetCustomerService(String authorization) {
+        String token = authorization.replace("Bearer ", "");
+        TokenProps tokenProps = activeTokens.get(token);
+        if (tokenProps == null) {
+            throw new IllegalArgumentException("Invalid or expired token.");
+        }
+        return (CustomerService) tokenProps.getClientService();
+    }
+
     @PostMapping("/purchase")
-    public String purchaseCoupon(@RequestBody Coupon coupon, @RequestHeader("Authorization") String authorisation) throws NonexistantObjectException, EmptyValueException, UnavailableCouponException, AlreadyPurchasedException {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
-        service.purchaseCoupon(coupon);
-        return coupon.getTitle() + "Was Purchased Successfully.";
+    public Coupon purchaseCoupon(@RequestBody Coupon coupon, @RequestHeader("Authorization") String authorisation) throws NonexistantObjectException, EmptyValueException, UnavailableCouponException, AlreadyPurchasedException {
+        CustomerService service = validateAndGetCustomerService(authorisation);
+        return service.purchaseCoupon(coupon);
     }
 
     @GetMapping("/mycoupons")
-    public List<Coupon> getCustomerCoupons(@RequestHeader("Authorization") String authorisation) {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
+    public List<Coupon> getCustomerCoupons(@RequestHeader("Authorization") String authorization) {
+        CustomerService service = validateAndGetCustomerService(authorization);
         return service.getCustomerCoupons();
     }
 
+
     @GetMapping("/mycouponsbycategory/{categoryId}")
     public List<Coupon> getCustomerCoupons(@PathVariable int categoryId, @RequestHeader("Authorization") String authorisation) {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
+        CustomerService service = (CustomerService) activeTokens.get(authorisation.replace("Bearer ", "")).getClientService();
         return service.getCustomerCoupons(categoryId);
     }
 
     @GetMapping("/mycouponsbetween/{minPrice}/{maxPrice}")
     public List<Coupon> getCustomerCoupons(@PathVariable double minPrice, @PathVariable double maxPrice, @RequestHeader("Authorization") String authorisation) throws NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
+        CustomerService service = (CustomerService) activeTokens.get(authorisation.replace("Bearer ", "")).getClientService();
         return service.getCustomerCoupons(minPrice, maxPrice);
     }
 
     @GetMapping()
     public Customer getCustomerDetails(@RequestHeader("Authorization") String authorisation) throws NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException, EmptyValueException {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
+        CustomerService service = (CustomerService) activeTokens.get(authorisation.replace("Bearer ", "")).getClientService();
         return service.getCustomerDetails();
     }
 
@@ -61,18 +71,23 @@ public class CustomerController {
     //methods that are shared with the guest controller
     @GetMapping("/categories")
     public List<Category> getCategories(@RequestHeader("Authorization") String authorisation) {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
+        CustomerService service = (CustomerService) activeTokens.get(authorisation.replace("Bearer ", "")).getClientService();
         return service.getCategories();
     }
 
     @GetMapping("/coupons")
     public List<Coupon> getCoupons(@RequestHeader("Authorization") String authorisation) {
-        CustomerService service = (CustomerService) activeTokens.get(authorisation).getClientService();
+        CustomerService service = (CustomerService) activeTokens.get(authorisation.replace("Bearer ", "")).getClientService();
         return service.getCoupons();
     }
 
+    @GetMapping("/coupon/{id}")
+    public Coupon getOneCoupon(@RequestHeader("Authorization") String authorisation, @PathVariable int id) {
+        CustomerService service = (CustomerService) activeTokens.get(authorisation.replace("Bearer ", "")).getClientService();
+        return service.getOneCoupon(id);
+    }
 
-//todo decide what to do with it
+
 //    @GetMapping("/couponsbypricebetween/{minPrice}/{maxPrice}")
 //    public List<Coupon> getCouponsByPriceBetween(@PathVariable double minPrice, @PathVariable double maxPrice) {
 //        return service.getCouponsByPriceBetween(minPrice, maxPrice);

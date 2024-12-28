@@ -33,22 +33,30 @@ public class GuestController {
     @PostMapping("/signup")
     public String customerSignUp(@RequestBody Customer customer) throws EmptyValueException, UnallowedUpdateException, SQLException, WrongEmailOrPasswordException {
         adminService.addCustomer(customer);
-        return login(customer.getEmail(), customer.getPassword());
+        return login(new LoginRequest(customer.getEmail(), customer.getPassword()));
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody String email, @RequestBody String password) throws WrongEmailOrPasswordException, EmptyValueException, NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException {
+    public String login(@RequestBody LoginRequest loginRequest) throws WrongEmailOrPasswordException, EmptyValueException, NonPositiveValueException, EmailFormatException, NegativeValueException, PasswordFormatException, NameException, SQLException, DateException {
+        // Extract email and password from the LoginRequest object
+        String email = loginRequest.getEmail();
+        String password = loginRequest.getPassword();
+
+        // Authenticate the user
         ClientService clientService = loginManager.login(email, password);
         String token = createToken(clientService);
-        //todo change null!
+
+        // Store the token (activeTokens is assumed to be a map that keeps track of tokens)
         activeTokens.put(token, new TokenProps(clientService));
-        return token;
+
+        return token; // Return the token to the client
     }
 
     @PostMapping("signout")
     public String signOut(@RequestHeader("Authorization") String authorization) throws EmptyValueException {
         if (authorization == null || authorization.isEmpty())
             throw new EmptyValueException();
+        authorization.replace("Bearer ", "");
         String username = JWT.decode(authorization).getClaim("username").asString();
         activeTokens.remove(authorization);
         return username  + " logged out successfully";
@@ -56,7 +64,7 @@ public class GuestController {
 
     private String createToken(ClientService clientService) throws EmptyValueException {
         Date expires = new Date();
-        expires.setTime(expires.getTime() + 1000 * 60 * 60 * 24);
+        expires.setTime(expires.getTime() + (1000 * 60 * 60 * 24));
         String token = "";
         if (clientService == null)
             throw new EmptyValueException();
@@ -67,6 +75,7 @@ public class GuestController {
                     .withIssuer("JohnCoupon")
                     .withIssuedAt(new Date())
                     .withClaim("clientType", "ADMINISTRATOR")
+                    .withClaim("id", admin.getId())
                     .withClaim("username", admin.getName())
                     .withClaim("email", admin.getEmail())
                     .withExpiresAt(expires)
@@ -77,6 +86,7 @@ public class GuestController {
                     .withIssuer("JohnCoupon")
                     .withIssuedAt(new Date())
                     .withClaim("clientType", "COMPANY")
+                    .withClaim("id", company.getId())
                     .withClaim("username", company.getName())
                     .withClaim("email", company.getEmail())
                     .withExpiresAt(expires)
@@ -87,6 +97,7 @@ public class GuestController {
                     .withIssuer("JohnCoupon")
                     .withIssuedAt(new Date())
                     .withClaim("clientType", "CUSTOMER")
+                    .withClaim("id", customer.getId())
                     .withClaim("username", customer.getFirstName() + " " + customer.getLastName())
                     .withClaim("email", customer.getEmail())
                     .withExpiresAt(expires)
@@ -95,6 +106,16 @@ public class GuestController {
         return token;
     }
 
+    @GetMapping("/companies")
+    public List<Company> getCompanies() {
+        return adminService.getAllCompanies();
+    }
+
+
+    @GetMapping("/company/{id}")
+    public Company getCompanyById(@PathVariable int id) {
+        return adminService.getOneCompany(id);
+    }
 
     //method that are shared with the customer controller
     @GetMapping("/categories")
@@ -109,6 +130,12 @@ public class GuestController {
         return coups;
     }
 
+    @GetMapping("/coupon/{id}")
+    public Coupon getOneCoupon(@PathVariable int id) {
+        return customerService.getOneCoupon(id);
+    }
+
+
 
 //todo decide what to do with it
 //    @GetMapping("/coupons/{minPrice}/{maxPrice}")
@@ -116,16 +143,16 @@ public class GuestController {
 //        return customerService.getCouponsByPriceBetween(minPrice, maxPrice);
 //    }
 //
-//    @GetMapping("/couponsbycategory/{categoryId}")
-//    public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
-//        return customerService.getCouponsByCategoryId(categoryId);
-//    }
-//
-//    @GetMapping("/couponsbycompany/{companyId}")
-//    public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
-//        return customerService.getCouponsByCompanyId(companyId);
-//    }
-//
+    @GetMapping("/couponsbycategory/{categoryId}")
+    public List<Coupon> getCouponsByCategoryId(@PathVariable int categoryId) {
+        return customerService.getCouponsByCategoryId(categoryId);
+    }
+
+    @GetMapping("/couponsbycompany/{companyId}")
+    public List<Coupon> getCouponsByCompanyId(@PathVariable int companyId) {
+        return customerService.getCouponsByCompanyId(companyId);
+    }
+
 //    @GetMapping("/couponsbycompanyandcategory/{companyId}/{categoryId}")
 //    public List<Coupon> getCouponsByCompanyIdAndCategoryId(@PathVariable int companyId,
 //                                                           @PathVariable int categoryId) {
@@ -149,6 +176,7 @@ public class GuestController {
 //                                                                        @PathVariable int categoryId, @PathVariable double minPrice, @PathVariable double maxPrice) {
 //        return customerService.getCouponsByCompanyIdAndCategoryAndPriceBetween(companyId, categoryId, minPrice, maxPrice);
 //    }
+
 
 
 }

@@ -1,5 +1,8 @@
 package couponsProjectPhase3.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.EmailFormatException;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.NameException;
 import couponsProjectPhase3.exceptions.unallowedUpdateExceptions.PasswordFormatException;
@@ -9,15 +12,19 @@ import java.util.Set;
 
 @Entity
 @Table(name = "customers")
-public class Customer{
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(nullable = false)
-    private String firstName, lastName, password;
+    private String firstName, lastName;
+    @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Allows deserialization but not serialization    private String password;
+    private String password;
     @Column(nullable = false, unique = true)
     private String email;
     @ManyToMany
+    @JsonIgnoreProperties
     private Set<Coupon> coupons;
 
     //ctors

@@ -19,7 +19,7 @@ import java.util.Map;
 @SpringBootApplication
 public class CouponsProjectPhase3Application {
 
-    public static void man(String[] args) {
+    public static void mn(String[] args) {
         ApplicationContext context = SpringApplication.run(CouponsProjectPhase3Application.class, args);
         DBFactory dbFactory = context.getBean(DBFactory.class);
         try {
@@ -31,11 +31,13 @@ public class CouponsProjectPhase3Application {
 
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(CouponsProjectPhase3Application.class, args);
+        CouponExpirationDailyJob job = context.getBean(CouponExpirationDailyJob.class);
+        job.run();
     }
 
     @Bean
     public Map<String, TokenProps> activeTokens() {
-        return new HashMap<>();
+        return new HashMap<String, TokenProps>();
     }
 
 }

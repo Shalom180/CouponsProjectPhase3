@@ -32,6 +32,6 @@ public class CustomersFactory extends Factory{
                 EmailProvider.values()[random.nextInt(EmailProvider.values().length)] + ".com";
         String password = Password.array[random.nextInt(Password.array.length)];
 
-        return new Customer(firstName, lastName, email, password, null);
+        return new Customer(firstName, lastName, password, email, null);
     }
 }

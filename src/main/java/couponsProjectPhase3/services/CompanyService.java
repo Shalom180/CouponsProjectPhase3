@@ -34,7 +34,7 @@ public class CompanyService extends ClientService {
         return false;
     }
 
-    public void addCoupon(Coupon coupon) throws NegativeValueException, DateException, EmptyValueException,
+    public Coupon addCoupon(Coupon coupon) throws NegativeValueException, DateException, EmptyValueException,
             AlreadyExistingValueException, CompanyIdException, UnallowedUpdateException, NonexistantObjectException {
         //checking for empty values
         if (coupon == null || coupon.getTitle() == null || coupon.getTitle().isEmpty() || coupon.getCompany() == null ||
@@ -65,10 +65,10 @@ public class CompanyService extends ClientService {
             throw new AlreadyExistingValueException();
 
 
-        couponsRepository.save(coupon);
+        return couponsRepository.save(coupon);
     }
 
-    public void updateCoupon(Coupon coupon) throws UnallowedUpdateException, EmptyValueException, NegativeValueException,
+    public Coupon updateCoupon(Coupon coupon) throws UnallowedUpdateException, EmptyValueException, NegativeValueException,
             DateException, AlreadyExistingValueException,
             NonexistantObjectException {
         //checking for empty values
@@ -100,7 +100,7 @@ public class CompanyService extends ClientService {
             if (couponsRepository.existsByTitle(coupon.getTitle()))
                 throw new AlreadyExistingValueException();
 
-        couponsRepository.save(coupon);
+        return couponsRepository.save(coupon);
     }
 
     public void deleteCoupon(int couponId) throws SQLException, CompanyIdException, NonPositiveValueException,

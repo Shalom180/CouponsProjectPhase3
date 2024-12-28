@@ -1,5 +1,7 @@
 package couponsProjectPhase3.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -14,7 +16,7 @@ public class Coupon {
     private int id;
     @ManyToOne
     @JoinColumn(nullable = false)
-    @JsonManagedReference
+    @JsonIgnoreProperties
     private Company company;
     @ManyToOne
     @JoinColumn(nullable = false)
@@ -27,6 +29,7 @@ public class Coupon {
     private double price;
     private String image;
     @ManyToMany(mappedBy = "coupons")
+    @JsonIgnore
     private Set<Customer> customers;
 
     //ctors

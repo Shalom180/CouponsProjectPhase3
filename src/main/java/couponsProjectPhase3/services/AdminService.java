@@ -32,7 +32,7 @@ public class AdminService extends ClientService {
         return false;
     }
 
-    public void addCompany(Company company) throws  EmptyValueException, UnallowedUpdateException {
+    public Company addCompany(Company company) throws  EmptyValueException, UnallowedUpdateException {
 
         //we'll check whether we've got an empty value which isn't allowed to be empty
         if (company == null || company.getName() == null || company.getName().isEmpty() || company.getPassword() == null
@@ -55,10 +55,10 @@ public class AdminService extends ClientService {
         if (companiesRepository.existsByEmail(company.getEmail()) || companiesRepository.existsByName(company.getName()))
             throw new AlreadyExistingValueException();
 
-        companiesRepository.save(company);
+        return companiesRepository.save(company);
     }
 
-    public void updateCompany(Company company) throws EmptyValueException,
+    public Company updateCompany(Company company) throws EmptyValueException,
             UnallowedUpdateException, NonexistantObjectException, AlreadyExistingValueException, EmailFormatException, PasswordFormatException {
         if (company == null)
             throw new EmptyValueException();
@@ -95,7 +95,7 @@ public class AdminService extends ClientService {
         //we cannot update a company while adding it new coupons - we'll reset its coupons list
         company.setCoupons(null);
 
-        companiesRepository.save(company);
+        return companiesRepository.save(company);
 
     }
 
@@ -119,9 +119,7 @@ public class AdminService extends ClientService {
         return companiesRepository.findById(companyId).orElseThrow();
     }
 
-    public void addCustomer(Customer customer) throws EmailFormatException,
-            PasswordFormatException, NameException,
-            EmptyValueException, AlreadyExistingValueException, UnallowedUpdateException {
+    public Customer addCustomer(Customer customer) throws EmptyValueException, UnallowedUpdateException {
         //we'll check for disallowed empty values
         if (customer == null || customer.getEmail() == null || customer.getEmail().isEmpty() ||
                 customer.getPassword() == null || customer.getPassword().isEmpty() || customer.getFirstName() == null ||
@@ -147,10 +145,10 @@ public class AdminService extends ClientService {
         if (customersRepository.existsByEmail(customer.getEmail()))
             throw new AlreadyExistingValueException();
 
-        customersRepository.save(customer);
+        return customersRepository.save(customer);
     }
 
-    public void updateCustomer(Customer customer) throws EmptyValueException, NonexistantObjectException,
+    public Customer updateCustomer(Customer customer) throws EmptyValueException, NonexistantObjectException,
             AlreadyExistingValueException, PasswordFormatException, EmailFormatException, NameException {
         //we cannot accept a null expression
         if (customer == null)
@@ -184,7 +182,7 @@ public class AdminService extends ClientService {
             throw new NameException();
 
         //we cannot update customer id
-        customersRepository.save(customer);
+       return customersRepository.save(customer);
     }
 
     public void deleteCustomer(int customerId) throws NonexistantObjectException {
@@ -213,7 +211,7 @@ public class AdminService extends ClientService {
         return categoriesRepository.findById(categoryId).orElseThrow();
     }
 
-    public String addCategory(Category category) throws UnallowedUpdateException, EmptyValueException {
+    public Category addCategory(Category category) throws UnallowedUpdateException, EmptyValueException {
         //we cannot add a null value
         if (category == null)
             throw new EmptyValueException();
@@ -230,11 +228,10 @@ public class AdminService extends ClientService {
         if (category.getId() != 0)
             throw new UnallowedUpdateException();
 
-        categoriesRepository.save(category);
-        return "A Category Named '" + category.getName() + "' Was added Successfully";
+        return categoriesRepository.save(category);
     }
 
-    public String updateCategory(Category category) throws EmptyValueException, NonexistantObjectException, NameException, AlreadyExistingValueException {
+    public Category updateCategory(Category category) throws EmptyValueException, NonexistantObjectException, NameException, AlreadyExistingValueException {
         //we cannot update a null value
         if (category == null)
             throw new EmptyValueException();
@@ -252,8 +249,7 @@ public class AdminService extends ClientService {
             throw new AlreadyExistingValueException();
 
 
-        categoriesRepository.save(category);
-        return "A Category With An Id Of '" + category.getId() + "' Was Updated Successfully";
+        return categoriesRepository.save(category);
     }
 
     //right now I do not want to implement a deleteCategory method because it is too risky. Categories can be deleted

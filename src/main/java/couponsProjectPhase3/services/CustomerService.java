@@ -37,7 +37,7 @@ public class CustomerService extends ClientService {
         return false;
     }
 
-    public void purchaseCoupon(Coupon coupon) throws EmptyValueException, AlreadyPurchasedException, UnavailableCouponException, NonexistantObjectException {
+    public Coupon purchaseCoupon(Coupon coupon) throws EmptyValueException, AlreadyPurchasedException, UnavailableCouponException, NonexistantObjectException {
         //method does not accept null values
         if (coupon == null)
             throw new EmptyValueException();
@@ -61,7 +61,7 @@ public class CustomerService extends ClientService {
         //after purchasing the coupons quantity goes down by one
         couponsRepository.addCouponPurchase(customerID, coupon.getId());
         coupon.setAmount(coupon.getAmount() - 1);
-        couponsRepository.save(coupon);
+        return couponsRepository.save(coupon);
     }
 
     public List<Coupon> getCustomerCoupons() {
@@ -79,6 +79,10 @@ public class CustomerService extends ClientService {
 
     public List<Coupon> getCoupons() {
         return couponsRepository.findAll();
+    }
+
+    public Coupon getOneCoupon(int couponId) {
+        return couponsRepository.findById(couponId).orElseThrow();
     }
 
     public List<Coupon> getCouponsByPriceBetween(double minPrice, double maxPrice) {
