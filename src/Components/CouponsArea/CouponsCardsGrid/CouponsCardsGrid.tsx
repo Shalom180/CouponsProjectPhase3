@@ -23,7 +23,7 @@ export function CouponsCardsGrid(props: CouponsCardsGridProps): JSX.Element {
             
             <Grid2 container spacing={2} direction="row" wrap="wrap" width="80%">
                 {props.coupons.length === 0 ? (
-                    <p>Loading...</p>
+                    <p>No Available Coupons Found</p>
                 ) : (
                     props.coupons.map(c => <CouponCard coupon={c} key={c.id} />)
                 )}
