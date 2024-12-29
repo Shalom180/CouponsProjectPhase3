@@ -19,20 +19,22 @@ import java.util.Map;
 @SpringBootApplication
 public class CouponsProjectPhase3Application {
 
-    public static void mn(String[] args) {
-        ApplicationContext context = SpringApplication.run(CouponsProjectPhase3Application.class, args);
-        DBFactory dbFactory = context.getBean(DBFactory.class);
-        try {
-            dbFactory.formatAndBuildDB();
-        } catch (EmailFormatException | NameException | PasswordFormatException | NonexistantObjectException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+//    public static void mn(String[] args) {
+//        ApplicationContext context = SpringApplication.run(CouponsProjectPhase3Application.class, args);
+//        DBFactory dbFactory = context.getBean(DBFactory.class);
+//        try {
+//            dbFactory.formatAndBuildDB();
+//        } catch (EmailFormatException | NameException | PasswordFormatException | NonexistantObjectException e) {
+//            System.out.println(e.getMessage());
+//        }
+//    }
 
     public static void main(String[] args) {
         ApplicationContext context = SpringApplication.run(CouponsProjectPhase3Application.class, args);
-        CouponExpirationDailyJob job = context.getBean(CouponExpirationDailyJob.class);
-        job.run();
+        CouponExpirationDailyJob couponExpirationDailyJob = context.getBean(CouponExpirationDailyJob.class);
+        TokenExpirationHourlyJob tokenExpirationHourlyJob = context.getBean(TokenExpirationHourlyJob.class);
+        couponExpirationDailyJob.run();
+        tokenExpirationHourlyJob.run();
     }
 
     @Bean

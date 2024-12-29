@@ -15,7 +15,7 @@ public interface CouponsRepository extends JpaRepository<Coupon, Integer> {
 
     boolean existsByTitle(String title);
 
-    @Query(value = "select * from coupons where end_date<?1", nativeQuery = true)
+    @Query(value = "select * from coupons where end_date<=?1", nativeQuery = true)
     List<Coupon> findAllCouponsExpireBefore(Date date);
 
     @Transactional
